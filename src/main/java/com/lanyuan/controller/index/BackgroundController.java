@@ -201,13 +201,12 @@ public class BackgroundController extends BaseController {
 			String driver = props.getProperty("jdbc.driverClass");
 			String username = props.getProperty("jdbc.username");
 			String password = props.getProperty("jdbc.password");
-			System.out.println(url);
 			Class.forName(driver).newInstance();
 			Connection conn = (Connection) DriverManager.getConnection(url, username, password);
 			ScriptRunner runner = new ScriptRunner(conn);
 			runner.setErrorLogWriter(null);
 			runner.setLogWriter(null);
-			runner.runScript((new InputStreamReader(new FileInputStream("intall.sql"),"UTF-8")));
+			runner.runScript((new InputStreamReader(new FileInputStream(getClass().getResource("/").getPath()+"intall.sql"),"UTF-8")));
 
 		} catch (Exception e) {
 			e.printStackTrace();
