@@ -129,7 +129,7 @@ public class BaseController {
 	 * 通过泛型回传对象.
 	 * <br/>
 	 *<b>author：</b><br/> 
-	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsplijianning</b><br/> 
+	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsplanyuan</b><br/> 
 	 *<b>date：</b><br/> 
 	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp2015-04-01</b><br/> 
 	 *<b>version：</b><br/> 

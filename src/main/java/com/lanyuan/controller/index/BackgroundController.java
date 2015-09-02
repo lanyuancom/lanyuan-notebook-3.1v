@@ -42,7 +42,7 @@ import com.lanyuan.util.TreeUtil;
 /**
  * 进行管理后台框架界面的类
  * 
- * @author lijianning 2015-04-05
+ * @author lanyuan 2015-04-05
  * @Email: mmm333zzz520@163.com
  * @version 3.0v
  */
@@ -138,7 +138,7 @@ public class BackgroundController extends BaseController {
 	/**
 	 * 获取某个用户的权限资源
 	 * 
-	 * @author lijianning Email：mmm333zzz520@163.com date：2014-3-4
+	 * @author lanyuan Email：mmm333zzz520@163.com date：2014-3-4
 	 * @param request
 	 * @return
 	 */
