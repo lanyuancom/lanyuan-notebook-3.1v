@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+    http://www.springframework.org/schema/beans/spring-beans-4.1.xsd   
+    http://www.springframework.org/schema/context   
+    http://www.springframework.org/schema/context/spring-context-4.1.xsd  
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+    http://www.springframework.org/schema/task 
+    http://www.springframework.org/schema/task/spring-task-4.1.xsd     
+    http://www.springframework.org/schema/aop 
+     http://www.springframework.org/schema/aop/spring-aop-4.1.xsd"
+     default-lazy-init="false"> 
+ 
+<!-- 定时器开关 开始 -->
+	<task:annotation-driven />
+	<!-- 标注类型 的事务配置 如果使用注解事务。就放开
+	<tx:annotation-driven />-->
+	
+	<!-- 统一异常处理方式 -->
+	<bean id="exceptionHandler" class="com.lanyuan.exception.MyExceptionHandler"/>
+	<!-- 初始化数据 -->
+	
+<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
+       <property name ="locations">
+           <list>
+            <value>classpath:jdbc.properties</value>
+           </list>
+       </property>
+       <property name="ignoreUnresolvablePlaceholders" value="true" />
+</bean>
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="driverClassName" value="${jdbc.driverClass}" />
+	</bean>
+	
+	<bean id="pagePlugin" class="com.lanyuan.plugin.PagePlugin">
+		<property name="properties">
+			<props>
+				<prop key="dialect">mysql</prop>
+				<prop key="pageSqlId">.*query.*</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 自动匹配Mapper映射文件 -->
+		<property name="mapperLocations" value="classpath:mappings/*-mapper.xml"/>
+		<property name="typeAliasesPackage" value="com.lanyuan.entity"/>
+		<property name="plugins">
+			<array>
+				<ref bean="pagePlugin" />
+			</array>
+		</property>
+	</bean>
+	<!-- 通过扫描的模式，扫描目录在com.lanyuan.mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.lanyuan.mapper" />
+	</bean>
+	<!-- 事务配置 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- <aop:config>
+		<aop:pointcut
+			expression="execution(public * com.lanyuan.controller.*(..))"
+			id="pointcut" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut" />
+	</aop:config>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="query*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="modify*" propagation="REQUIRED" />
+			<tx:method name="logicDelById" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice> -->
+	<!-- <aop:aspectj-autoproxy proxy-target-class="true"/> 
+	 <bean id="log4jHandlerAOP" class="com.lanyuan.logAop.LogAopAction"></bean> 
+		<aop:config proxy-target-class="true">
+		    <aop:aspect id="logAspect" ref="log4jHandlerAOP"> 
+		    <aop:pointcut id="logPointCut" expression="execution(* org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(..))" /> 
+		    <aop:around method="logAll" pointcut-ref="logPointCut" /> </aop:aspect> 
+		</aop:config> -->
+	<!-- 使用Spring组件扫描的方式来实现自动注入bean -->
+	<context:component-scan base-package="com.lanyuan.task" />
+	<!-- 隐式地向 Spring 容器注册 -->
+	<context:annotation-config />
+</beans>
