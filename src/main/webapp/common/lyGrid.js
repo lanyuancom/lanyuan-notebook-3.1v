@@ -490,8 +490,8 @@
 					var chkbox = document.createElement("INPUT");
 					chkbox.type = "checkbox";
 					// ******** 树的上下移动需要
-					chkbox.setAttribute("cid", _getValueByName(jsonTree[jt], "id"));
-					chkbox.setAttribute("pid", _getValueByName(jsonTree[jt], "parentId"));
+					chkbox.setAttribute("cid", _getValueByName(jsonTree[jt], l_tree.id));
+					chkbox.setAttribute("pid", _getValueByName(jsonTree[jt], l_tree.pid));
 					// ******** 树的上下移动需要
 					chkbox.setAttribute("_l_key", "checkbox");
 					chkbox.value = _getValueByName(jsonTree[jt], conf.checkValue);
