@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.ibatis.io.ClassLoaderWrapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.shiro.SecurityUtils;
@@ -183,7 +184,6 @@ public class BackgroundController extends BaseController {
 				bos.close();
 		}
 	}
-
 	@RequestMapping(value = "logout", method = RequestMethod.GET)
 	public String logout() {
 		// 使用权限管理工具进行用户的退出，注销登录
@@ -206,7 +206,7 @@ public class BackgroundController extends BaseController {
 			ScriptRunner runner = new ScriptRunner(conn);
 			runner.setErrorLogWriter(null);
 			runner.setLogWriter(null);
-			runner.runScript((new InputStreamReader(new FileInputStream(getClass().getResource("/").getPath()+"intall.sql"),"UTF-8")));
+			runner.runScript((new InputStreamReader(getClass().getResourceAsStream("/intall.sql"),"UTF-8")));
 
 		} catch (Exception e) {
 			e.printStackTrace();
