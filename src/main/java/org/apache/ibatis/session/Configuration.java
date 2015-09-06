@@ -161,11 +161,11 @@ public class Configuration {
 	protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList<ResultMapResolver>();
 	protected final Collection<MethodResolver> incompleteMethods = new LinkedList<MethodResolver>();
 
-	public static final String SHOW_COLUMNS_FROM = "SHOW COLUMNS FROM ";
+	public static final String SHOW_COLUMNS_FROM = "show columns from ";
 
-	public static final String COLUMN_KEY = "COLUMN_KEY";
+	public static final String COLUMN_KEY = "column_key";
 
-	public static final String FIELD = "FIELD";
+	public static final String FIELD = "field";
 
 	public static final String LY_TABLE = "ly_table";
 
