@@ -18,11 +18,11 @@
 <link
 	href="${pageContext.servletContext.contextPath }/admin_files/css.css"
 	rel="stylesheet" type="text/css">
-<style type="text/css">
-.alpha {
-	
+<script type="text/javascript">
+if(window.location.href.indexOf("/login.shtml")==-1){
+	top.location.href="login.shtml";
 }
-</style>
+</script>
 </head>
 <body
 	style="background-image: url('${pageContext.servletContext.contextPath }/admin_files/9.jpg');margin-top:0px;">
