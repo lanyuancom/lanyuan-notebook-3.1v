@@ -154,7 +154,7 @@
 					class="dropdown-toggle" data-toggle="dropdown"> <span
 						class="thumb-sm avatar pull-left"> <img
 							src="${ctx}/notebook/notebook_files/avatar.jpg">
-					</span> John.Smith <b class="caret"></b>
+					</span> ${userFormMap.accountName} <b class="caret"></b>
 				</a>
 					<ul class="dropdown-menu animated fadeInRight">
 						<span class="arrow top"></span>

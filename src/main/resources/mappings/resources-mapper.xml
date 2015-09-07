@@ -43,6 +43,9 @@
 		   )
 		</if>
 		)
+		<if test="parentId != null and parentId != '' and parentId != 0">
+			and parentId = #{parentId}
+		</if>
 		order by level asc
 	</select>
 

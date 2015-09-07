@@ -1,6 +1,7 @@
 package com.lanyuan.controller.index;
 
 import java.io.BufferedInputStream;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,11 +32,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.lanyuan.entity.ResFormMap;
+import com.lanyuan.entity.UserFormMap;
 import com.lanyuan.entity.UserLoginFormMap;
 import com.lanyuan.mapper.ResourcesMapper;
 import com.lanyuan.mapper.UserLoginMapper;
+import com.lanyuan.mapper.UserMapper;
 import com.lanyuan.util.Common;
 import com.lanyuan.util.TreeObject;
 import com.lanyuan.util.TreeUtil;
@@ -46,6 +51,7 @@ import com.lanyuan.util.TreeUtil;
  * @author lanyuan 2015-04-05
  * @Email: mmm333zzz520@163.com
  * @version 3.0v
+ * @mod  Ekko 2015-09-07
  */
 @Controller
 @RequestMapping("/")
@@ -56,7 +62,7 @@ public class BackgroundController extends BaseController {
 
 	@Inject
 	private UserLoginMapper userLoginMapper;
-
+	
 	/**
 	 * @return
 	 */
@@ -113,12 +119,18 @@ public class BackgroundController extends BaseController {
 	}
 
 	/**
-	 * @return
+	 * @mod Ekko 2015-09-07
 	 * @throws Exception
 	 */
 	@RequestMapping("index")
 	public String index(Model model) throws Exception {
-		List<ResFormMap> mps = resourcesMapper.findByWhere(new ResFormMap());
+		// 获取登录的bean
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+		UserFormMap userFormMap = (UserFormMap)Common.findUserSession(request);
+		ResFormMap resFormMap = new ResFormMap();
+		resFormMap.put("userId", userFormMap.get("id"));
+		List<ResFormMap> mps = resourcesMapper.findRes(resFormMap);
+		//List<ResFormMap> mps = resourcesMapper.findByWhere(new ResFormMap());
 		List<TreeObject> list = new ArrayList<TreeObject>();
 		for (ResFormMap map : mps) {
 			TreeObject ts = new TreeObject();
@@ -128,6 +140,8 @@ public class BackgroundController extends BaseController {
 		TreeUtil treeUtil = new TreeUtil();
 		List<TreeObject> ns = treeUtil.getChildTreeObjects(list, 0);
 		model.addAttribute("list", ns);
+		// 登陆的信息回传页面
+		model.addAttribute("userFormMap", userFormMap);
 		return "/index";
 	}
 

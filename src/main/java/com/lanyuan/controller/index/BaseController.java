@@ -1,6 +1,7 @@
 package com.lanyuan.controller.index;
 
 import java.util.Enumeration;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -10,6 +11,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.lanyuan.entity.ResFormMap;
+import com.lanyuan.entity.UserFormMap;
 import com.lanyuan.mapper.ResourcesMapper;
 import com.lanyuan.plugin.PageView;
 import com.lanyuan.util.Common;
@@ -53,14 +55,29 @@ public class BaseController {
 	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsplanyuan</b><br/> 
 	 *<b>date：</b><br/> 
 	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp2015-04-01</b><br/> 
+	 *<b>mod by：</b><br/> 
+	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspEkko</b><br/> 
+	 *<b>date：</b><br/> 
+	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp2015-09-07</b><br/> 
 	 *<b>version：</b><br/> 
 	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp3.0v</b>
 	 * @return Class<T>
 	 * @throws Exception
 	 */
 	public List<ResFormMap> findByRes(){
+		// 资源ID
 		String id = getPara("id");
-		List<ResFormMap> rse = resourcesMapper.findByAttribute("parentId", id, ResFormMap.class);
+		// 获取request
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();  
+		// 通过工具类获取当前登录的bean
+		UserFormMap userFormMap = (UserFormMap)Common.findUserSession(request);
+		// user id
+		int userId = userFormMap.getInt("id");
+		ResFormMap resQueryForm = new ResFormMap();
+		resQueryForm.put("parentId", id);
+		resQueryForm.put("userId", userId);
+		List<ResFormMap> rse = resourcesMapper.findRes(resQueryForm);
+		//List<ResFormMap> rse = resourcesMapper.findByAttribute("parentId", id, ResFormMap.class);
 		for (ResFormMap resFormMap : rse) {
 			Object o =resFormMap.get("description");
 			if(o!=null&&!Common.isEmpty(o.toString())){
