@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans  
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
     http://www.springframework.org/schema/context   
-    http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
 	default-lazy-init="true">
 	
 	<bean id="credentialsMatcher"
@@ -20,6 +22,7 @@
 	<!-- 凭证匹配器 -->
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
 		<property name="realm" ref="myRealm" />
+		<property name="sessionManager" ref="sessionManager"/>
 		<!-- 使用下面配置的缓存管理器 -->
 		<property name="cacheManager" ref="cacheManager" />
 	</bean>
@@ -33,7 +36,20 @@
         <!--<property name="authorizationCachingEnabled" value="true"/>-->
         <!--<property name="authorizationCacheName" value="authorizationCache"/>-->
 	</bean>
+	
+     <bean id="sysUserFilter" class="com.xjg.shiro.filter.SysUserFilter"/>
+    
+    
+	 <bean id="kickoutSessionControlFilter" class="com.xjg.shiro.filter.KickoutSessionControlFilter">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="sessionManager" ref="sessionManager"/>
 
+        <property name="kickoutAfter" value="false"/>
+        <property name="maxSession" value="1"/>
+        <property name="kickoutUrl" value="/login.shtml"/>
+    </bean>
+    
+    
 	<!-- 配置shiro的过滤器工厂类，id- shiroFilter要和我们在web.xml中配置的过滤器一致 -->
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
 		<property name="securityManager" ref="securityManager" />
@@ -42,6 +58,12 @@
 		<property name="unauthorizedUrl" value="/denied.jsp" />
 		<!-- 自定义权限配置 -->
 		<property name="filterChainDefinitionMap" ref="chainDefinitionSectionMetaSource" />
+		<property name="filters">
+            <util:map>
+                <entry key="sysUser" value-ref="sysUserFilter"/>
+                <entry key="kickout" value-ref="kickoutSessionControlFilter"/>
+            </util:map>
+        </property>
 	</bean>
 	<!--自定义filterChainDefinitionMap -->
 	<bean id="chainDefinitionSectionMetaSource" class="com.lanyuan.shiro.ChainDefinitionSectionMetaSource">
