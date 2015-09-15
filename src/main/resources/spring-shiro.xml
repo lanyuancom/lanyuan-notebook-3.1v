@@ -37,10 +37,10 @@
         <!--<property name="authorizationCacheName" value="authorizationCache"/>-->
 	</bean>
 	
-     <bean id="sysUserFilter" class="com.xjg.shiro.filter.SysUserFilter"/>
+     <bean id="sysUserFilter" class="com.lanyuan.shiro.filter.SysUserFilter"/>
     
     
-	 <bean id="kickoutSessionControlFilter" class="com.xjg.shiro.filter.KickoutSessionControlFilter">
+	 <bean id="kickoutSessionControlFilter" class="com.lanyuan.shiro.filter.KickoutSessionControlFilter">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="sessionManager" ref="sessionManager"/>
 
@@ -84,6 +84,9 @@
 			</value>
 		</property>
 	</bean>
+	
+	<bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
+	
 	 <!-- 会话DAO -->
     <bean id="sessionDAO" class="org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO">
         <property name="activeSessionsCacheName" value="shiro-activeSessionCache"/>
