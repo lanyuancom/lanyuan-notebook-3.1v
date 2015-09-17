@@ -36,7 +36,8 @@
 				name : 'name',// 以哪个字段 的树形式 如果是多个 name,key
 				id: "id",
 				pid: "pid"
-			}
+			},
+			sortJsonFunc:null
 		// 树形式 {tree : false,//是否显示树 name : 'name'}//以哪个字段 的树形式
 		};
 		var l_col = {
@@ -180,14 +181,13 @@
 			} else {
 				h = conf.height;
 			}
-			tdiv.setAttribute("style", 'overflow-y: ' + xy + '; overflow-x: ' + xy + '; height: ' + h + '; border: 1px solid #DDDDDD;background: white;');
+			tdiv.setAttribute("style", 'overflow-y: ' + xy + '; height: ' + h + '; border: 1px solid #DDDDDD;background: white;');
 			tdiv.className = "t_table";
 			divid.appendChild(tdiv);
 			var table2 = document.createElement("table");// 1.创建一个table表
 			table2.id = "mytable";
 			table2.className = "pp-list table table-striped table-bordered";
-			table2.setAttribute("style", "margin-bottom: -3px;");
-
+			table2.setAttribute("style", "margin-bottom: -3px;width:"+conf.width);
 			tdiv.appendChild(table2);
 			var tbody = document.createElement("tbody");// 1.创建一个table表
 			table2.appendChild(tbody);
@@ -227,6 +227,10 @@
 			}
 			
 			$.each(json, function(d) {
+				if(conf.sortJsonFunc){
+					json = conf.sortJsonFunc(json)
+				}
+				
 				if(CommnUtil.notNull(json[d])){
 					var tr = document.createElement('tr');
 					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
