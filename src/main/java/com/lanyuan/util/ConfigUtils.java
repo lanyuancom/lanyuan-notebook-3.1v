@@ -63,6 +63,7 @@ public class ConfigUtils {
 			}
 		} catch (Exception e) {
 			logger.error(" 初始化数据失败,没法加载表字段到缓存 -->> "+e.fillInStackTrace());
+			e.printStackTrace();
 		} finally {
 			try {
 				rs.close();
