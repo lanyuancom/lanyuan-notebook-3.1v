@@ -9,12 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.bind.PropertyException;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.executor.statement.BaseStatementHandler;
 import org.apache.ibatis.executor.statement.RoutingStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -25,11 +22,9 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
-import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.log4j.Logger;
 
 import com.lanyuan.annotation.TableSeg;
-import com.lanyuan.util.Common;
 import com.lanyuan.util.FormMap;
 
 /**

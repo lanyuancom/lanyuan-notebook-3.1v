@@ -140,4 +140,26 @@ public class UserController extends BaseController {
 			return false;
 		}
 	}
+	
+	//密码修改
+	@RequestMapping("updatePassword")
+	public String updatePassword(Model model) throws Exception {
+		return Common.BACKGROUND_PATH + "/system/user/updatePassword";
+	}
+	
+	//保存新密码
+	@RequestMapping("editPassword")
+	@ResponseBody
+	@Transactional(readOnly=false)//需要事务操作必须加入此注解
+	@SystemLog(module="系统管理",methods="用户管理-修改密码")//凡需要处理业务逻辑的.都需要记录操作日志
+	public String editPassword(String txtGroupsSelect) throws Exception{
+		// 当验证都通过后，把用户信息放在session里
+		UserFormMap userFormMap = getFormMap(UserFormMap.class);
+		userFormMap.put("txtGroupsSelect", txtGroupsSelect);
+		//这里对修改的密码进行加密
+		PasswordHelper passwordHelper = new PasswordHelper();
+		passwordHelper.encryptPassword(userFormMap);
+		userMapper.editEntity(userFormMap);
+		return "success";
+	}
 }

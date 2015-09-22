@@ -6,8 +6,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +15,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.ibatis.io.ClassLoaderWrapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.shiro.SecurityUtils;
@@ -40,10 +37,10 @@ import com.lanyuan.entity.UserFormMap;
 import com.lanyuan.entity.UserLoginFormMap;
 import com.lanyuan.mapper.ResourcesMapper;
 import com.lanyuan.mapper.UserLoginMapper;
-import com.lanyuan.mapper.UserMapper;
 import com.lanyuan.util.Common;
 import com.lanyuan.util.TreeObject;
 import com.lanyuan.util.TreeUtil;
+import com.mysql.jdbc.Connection;
 
 /**
  * 进行管理后台框架界面的类
