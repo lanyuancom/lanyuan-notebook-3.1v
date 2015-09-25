@@ -1,6 +1,6 @@
 function updatePasswordLayer(){
 	//加载层
-	var index = layer.load(2, {shade: false}); //0代表加载的风格，支持0-2
+ 	var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
 	//iframe层-禁滚动条
 	layer.open({
 	    type: 2,
@@ -39,33 +39,37 @@ $(function() {
 				success : function(data) {
 					if (data == "success") {
 						layer.confirm('修改密码成功!是否关闭窗口?', function(index) {
-							parent.grid.loadData();
-							parent.layer.close(parent.pageii);
-							return false;
+							layer.close(index);
+							var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+							parent.layer.close(index); //再执行关闭   
 						});
 					} else {
-						layer.msg('修改密码！', 3);
+						layer.msg('修改密码失败！', {icon: 5});
 					}
 				}
 			});
 		},
 		rules : {
 			"userFormMap.newpassword" : {
+				minlength: 6,
 				required : true
 			},
 			"userFormMap.confirmpassword": {
 				required : true,
-				same:true, 
+				minlength: 6,
+//				same:true, 
 				equalTo: "#newpassword"
 			}
 		},
 		messages : {
 			"userFormMap.newpassword" : {
-				required : "请输入新密码"
+				required : "请输入新密码",
+				minlength: jQuery.format("密码不能小于{0}个字 符")
 			},
 			"userFormMap.confirmpassword" : {
 				required : "请输入确认密码",
-				same : "新密码和确认密码不一致"
+				minlength: jQuery.format("密码不能小于{0}个字 符"),
+				equalTo : "新密码和确认密码不一致"
 			}
 		},
 		errorPlacement : function(error, element) {// 自定义提示错误位置
