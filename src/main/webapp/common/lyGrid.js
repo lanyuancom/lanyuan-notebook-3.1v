@@ -37,7 +37,6 @@
 				id: "id",
 				pid: "pid"
 			},
-			sortJsonFunc:null
 		// 树形式 {tree : false,//是否显示树 name : 'name'}//以哪个字段 的树形式
 		};
 		var l_col = {
@@ -47,6 +46,7 @@
 			height : 'auto',
 			align : 'center',
 			hide : false,
+			isSort:false,
 			renderData : null
 		// 渲染数据function( rowindex ,data, rowdata, colkey)
 		};
@@ -101,7 +101,6 @@
 		var divid = "";
 		var tee = "1-0";
 		var createHtml = function() {
-
 			var jsonData = jsonRequest();
 			if (jsonData == '') {
 				return;
@@ -119,11 +118,23 @@
 			if(conf.isFixed){//不固定表头
 				cHeadTable(divid);
 			}
-			cBodyTable(divid, jsonData);
+			cBodyTh(divid);
+			cBodytb(divid, jsonData);
 			if (conf.usePage) {// 是否分页
 				fenyeDiv(divid, jsonData);
 			}
 		};
+		
+		var replayData = function(){
+			var jsonData = jsonRequest();
+			var id = conf.pagId;
+			divid = typeof (id) == "string" ? document.getElementById(id) : id;
+			cBodytb(divid, jsonData);
+			if (conf.usePage) {// 是否分页
+				fenyeDiv(divid, jsonData);
+			}
+		}
+		
 		var cHeadTable = function(divid) {
 			var table = document.createElement("table");// 1.创建一个table表
 			table.id = "table_head";// 2.设置id属性
@@ -158,12 +169,16 @@
 				if (!column[o].hide || column[o].hide == undefined) {
 					var th = document.createElement('th');
 					th.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;");
-					th.innerHTML = column[o].name;
+					if(column[o].isSort){
+						th.innerHTML = column[o].name+'<img src='+rootPath+'"/images/up.png">';
+					}else{
+						th.innerHTML = column[o].name;
+					}
 					tr.appendChild(th);
 				}
 			});
 		};
-		var cBodyTable = function(divid, jsonData) {
+		var cBodyTh = function(divid) {
 			var tdiv = document.createElement("div");
 			var h = '';
 			var xy = "hidden";
@@ -185,18 +200,18 @@
 			tdiv.className = "t_table";
 			divid.appendChild(tdiv);
 			var table2 = document.createElement("table");// 1.创建一个table表
+			
 			table2.id = "mytable";
 			table2.className = "pp-list table table-striped table-bordered";
 			table2.setAttribute("style", "margin-bottom: -3px;width:"+conf.width);
 			tdiv.appendChild(table2);
-			var tbody = document.createElement("tbody");// 1.创建一个table表
-			table2.appendChild(tbody);
-			var json = _getValueByName(jsonData, conf.records);
+			var thead = document.createElement("thead");// 1.创建一个thead
+			table2.appendChild(thead);
 			
 			if(!conf.isFixed){//不固定表头
 				var tr = document.createElement('tr');
 				tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
-				tbody.appendChild(tr);
+				thead.appendChild(tr);
 				var cn = "";
 				if (!conf.serNumber) {
 					cn = "none";
@@ -219,18 +234,28 @@
 				$.each(column, function(o) {
 					if (!column[o].hide || column[o].hide == undefined) {
 						var th = document.createElement('th');
-						th.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;");
-						th.innerHTML = column[o].name;
+						var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;";
+						if(column[o].isSort){
+							th.innerHTML = column[o].name+'<img title="'+column[o].colkey+',asc" src="'+rootPath+'/images/up.png">';
+							th.onclick = sortBind.bind();
+							at+="cursor:pointer;";
+						}else{
+							th.innerHTML = column[o].name;
+						}
+						th.setAttribute("style", at);
 						tr.appendChild(th);
 					}
 				});
 			}
 			
+		};
+		var cBodytb = function(divId,jsonData){
+			$('#'+divId.id+' table > tbody').remove() ;
+			$('#'+divId.id+' div:eq(1)').remove() ;
+			var tbody = document.createElement("tbody");// 1.创建一个thead
+			divId.getElementsByTagName('table')[0].appendChild(tbody) ;
+			var json = _getValueByName(jsonData, conf.records);
 			$.each(json, function(d) {
-				if(conf.sortJsonFunc){
-					json = conf.sortJsonFunc(json)
-				}
-				
 				if(CommnUtil.notNull(json[d])){
 					var tr = document.createElement('tr');
 					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
@@ -325,7 +350,7 @@
 					}
 				}
 			});
-		};
+		}
 		var fenyeDiv = function(divid, jsonData) {
 			var totalRecords = _getValueByName(jsonData, conf.totalRecords);
 			var totalPages = _getValueByName(jsonData, conf.totalPages);
@@ -802,8 +827,32 @@
 			conf.data = $.extend(conf.data, {
 				pageNow : page
 			});
-			init();
+			replayData();
 		};
+		
+		var sortBind = function(){
+			var evt = arguments[0] || window.event;
+			var th = evt.srcElement || evt.target;
+			var t = th.title.split(",");
+			if(t[0]==""){
+				th=th.firstElementChild
+				t=th.title.split(",");
+			}
+			var sc = "";
+			if(t[1]=="asc"){
+				th.src=rootPath+'/images/dp.png';
+				th.title=t[0]+",desc";
+				sc="desc";
+			}else{
+				th.src=rootPath+'/images/up.png';
+				th.title=t[0]+",asc";
+				sc="asc";
+			}
+			conf.data = $.extend(conf.data, {
+				column:t[0],sort:sc
+			});
+			replayData();
+		}
 		var datatree = function() { // 页数
 			var evt = arguments[0] || window.event;
 			var img = evt.srcElement || evt.target;
@@ -922,14 +971,15 @@
 		 */
 		var loadData = function() {
 			$.extend(conf, params);
-			init();
+			replayData();
 		};
+		
 		/**
 		 * 查询时，设置参数查询
 		 */
 		var setOptions = function(params) {
 			$.extend(conf, params);
-			init();
+			replayData();
 		};
 		/**
 		 * 获取选中的值
