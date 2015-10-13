@@ -30,7 +30,7 @@ $(function() {
 			}
 		}, {
 			name : "操作",
-			renderData : function(data, rowdata, rowindex, column) {
+			renderData : function( rowindex ,data, rowdata, colkeyn) {
 				return "测试渲染函数";
 			}
 		} ],
