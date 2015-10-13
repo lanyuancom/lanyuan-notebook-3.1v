@@ -6,7 +6,16 @@
 <script type="text/javascript" src="${ctx}/js/system/user/updatePassword.js"></script>
 <script type="text/javascript">
 	$(function() {
-		
+    //修改时间2015年10月13日14:32:57
+    //修改在手机上点击菜单后菜单不关闭问题
+    //修改人赵雷
+    var winwidth = $("body").width();
+    if(winwidth<770){
+     $("#nav").click(function(){
+        $("#nav").removeClass("nav-off-screen");
+     });
+    }
+    //---------修改人赵雷完毕----------
 		var tb = $("#loadhtml");
 		tb.html(CommnUtil.loadingImg());
 		tb.load(rootPath+"/welcome.jsp");
