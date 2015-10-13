@@ -11,7 +11,7 @@
     //修改人赵雷
     var winwidth = $("body").width();
     if(winwidth<770){
-     $("#nav").click(function(){
+      $("#nav ul.lt li").click(function(){
         $("#nav").removeClass("nav-off-screen");
      });
     }
