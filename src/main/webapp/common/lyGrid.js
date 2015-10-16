@@ -139,7 +139,6 @@
 			var table = document.createElement("table");// 1.创建一个table表
 			table.id = "table_head";// 2.设置id属性
 			table.className = "pp-list table table-striped table-bordered";
-			table.setAttribute("style", "margin-bottom: -3px;");
 			divid.appendChild(table);
 			var thead = document.createElement('thead');
 			table.appendChild(thead);
@@ -196,14 +195,14 @@
 			} else {
 				h = conf.height;
 			}
-			tdiv.setAttribute("style", 'overflow-y: ' + xy + '; height: ' + h + '; border: 1px solid #DDDDDD;background: white;');
+			tdiv.setAttribute("style", 'overflow-y: ' + xy + '; height: ' + h + ';background: white;');
 			tdiv.className = "t_table";
 			divid.appendChild(tdiv);
 			var table2 = document.createElement("table");// 1.创建一个table表
 			
 			table2.id = "mytable";
 			table2.className = "pp-list table table-striped table-bordered";
-			table2.setAttribute("style", "margin-bottom: -3px;width:"+conf.width);
+			table2.setAttribute("style", "width:"+conf.width);
 			tdiv.appendChild(table2);
 			var thead = document.createElement("thead");// 1.创建一个thead
 			table2.appendChild(thead);
