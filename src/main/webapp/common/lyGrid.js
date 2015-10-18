@@ -82,10 +82,12 @@
 		var returnData = '';
 		var jsonRequest = function() {
 			var json = '';
+			var p = {pageSize:conf.pageSize};
+			var d = $.extend(p, conf.data);
 			$.ajax({
 				type : 'POST',
 				async : conf.async,
-				data : conf.data,
+				data : d,
 				url : conf.jsonUrl,
 				dataType : 'json',
 				success : function(data) {
