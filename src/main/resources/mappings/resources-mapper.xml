@@ -50,8 +50,7 @@
 	</select>
 
 	<!-- 根据账号Id获取该用户的权限 -->
-	<select id="findUserResourcess" parameterType="String"
-		resultType="com.lanyuan.entity.ResFormMap">
+	<select id="findUserResourcess" parameterType="String" resultType="com.lanyuan.entity.ResFormMap">
 		SELECT
 		<include refid="selectId" />
 		from ly_resources where id in(
@@ -77,5 +76,20 @@
 	<insert id="addRoleRes">
 		insert into ly_res_roles (role_id,resc_id) value (#{roleId},#{resId})
 	</insert>
-
+	
+	<!-- ekko 2015年10月27日11:25:17 -->
+	<select id="findRoleResourcess" parameterType="String" resultType="com.lanyuan.entity.ResFormMap">
+		SELECT
+			lr1.*
+		FROM
+			ly_resources lr1,
+			ly_role_res lr2,
+			ly_role lr3
+		WHERE
+			lr1.id = lr2.resId
+		AND lr2.roleId = lr3.id
+		AND lr2.roleId = #{roleId}
+	</select>
+	
+	
 </mapper>

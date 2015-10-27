@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -17,8 +18,11 @@ import com.lanyuan.entity.ButtomFormMap;
 import com.lanyuan.entity.Params;
 import com.lanyuan.entity.ResFormMap;
 import com.lanyuan.entity.ResUserFormMap;
+import com.lanyuan.entity.RoleFormMap;
+import com.lanyuan.entity.RoleResFormMap;
 import com.lanyuan.entity.UserGroupsFormMap;
 import com.lanyuan.mapper.ResourcesMapper;
+import com.lanyuan.mapper.RoleMapper;
 import com.lanyuan.util.Common;
 import com.lanyuan.util.TreeObject;
 import com.lanyuan.util.TreeUtil;
@@ -34,7 +38,9 @@ import com.lanyuan.util.TreeUtil;
 public class ResourcesController extends BaseController {
 	@Inject
 	private ResourcesMapper resourcesMapper;
-
+	
+	@Inject
+	private RoleMapper roleMapper;
 	/**
 	 * @param model
 	 *            存放返回界面的model
@@ -223,12 +229,43 @@ public class ResourcesController extends BaseController {
 		return "success";
 	}
 
+	/**
+	 * 查找相关资源
+	 * 2015年10月27日
+	 * @author Ekko
+	 */
 	@ResponseBody
 	@RequestMapping("findRes")
 	public List<ResFormMap> findUserRes() {
 		ResFormMap resFormMap = getFormMap(ResFormMap.class);
-		List<ResFormMap> rs = resourcesMapper.findRes(resFormMap);
-		return rs;
+		List<ResFormMap> resQ = new ArrayList<ResFormMap>();
+		// 根据不同的参数处理不同的查找
+		// 如果是权限，则直接查找 return
+		// 如果是用户，则先查找相关角色，查找结果组合成List return
+		if(resFormMap.containsKey("roleId"))
+		{
+			resQ = resourcesMapper.findRes(resFormMap);
+			return resQ;
+		}
+		else if(resFormMap.containsKey("userId"))
+		{
+			RoleFormMap roleFormMap = new RoleFormMap();
+			roleFormMap.put("userId", resFormMap.get("userId"));
+			List<RoleFormMap> roles = roleMapper.seletUserRole(roleFormMap);
+			
+			for(RoleFormMap role : roles)
+			{
+				resFormMap.clear();
+				resFormMap.put("roleId", role.get("id"));
+				List<ResFormMap> rs = resourcesMapper.findRes(resFormMap);
+				for(ResFormMap res : rs)
+				{
+					resQ.add(res);
+				}
+			}
+			return resQ;
+		}
+		return resQ;
 	}
 	@ResponseBody
 	@RequestMapping("addUserRes")
@@ -287,4 +324,33 @@ public class ResourcesController extends BaseController {
 			return false;
 		}
 	}
+	
+	/**
+	 * @desc 角色分配权限 
+	 * @author ekko 11:00:55
+	 * @since 2015年10月27日
+	 * @return
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping("addRoleRes")
+	@Transactional(readOnly=false)//需要事务操作必须加入此注解
+	@SystemLog(module="系统管理",methods="角色管理/组管理-修改权限")//凡需要处理业务逻辑的.都需要记录操作日志
+	public String addRoleRes() throws Exception {
+		//角色对应多个资源id
+		String roleId = getPara("roleId");
+		String[] s = getParaValues("resId[]");
+		List<RoleResFormMap> roleResFormMaps = new ArrayList<RoleResFormMap>();
+		//角色关联多个资源id,先删除后保存
+		resourcesMapper.deleteByAttribute("roleId", roleId, RoleResFormMap.class);
+		for (String rid : s) {
+			RoleResFormMap roleResFormMap = new RoleResFormMap();
+			roleResFormMap.put("resId", rid);
+			roleResFormMap.put("roleId", roleId);
+			roleResFormMaps.add(roleResFormMap);
+		}
+		resourcesMapper.batchSave(roleResFormMaps);
+		return "success";
+	}
+	
 }
