@@ -1,13 +1,9 @@
 package com.lanyuan.shiro;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -23,10 +19,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 
 import com.lanyuan.entity.ResFormMap;
-import com.lanyuan.entity.RoleFormMap;
 import com.lanyuan.entity.UserFormMap;
 import com.lanyuan.mapper.ResourcesMapper;
-import com.lanyuan.mapper.RoleMapper;
 import com.lanyuan.mapper.UserMapper;
 
 /**
@@ -43,67 +37,31 @@ public class MyRealm extends AuthorizingRealm {
 
 	@Inject
 	private UserMapper userMapper;
-	
-	@Inject
-	private RoleMapper roleMapper;
-	
+
 	/**
 	 * 只有需要验证权限时才会调用, 授权查询回调函数, 进行鉴权但缓存中无用户的授权信息时调用.在配有缓存的情况下，只加载一次.
-	 * mod ekko 2015年10月27日
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 		String loginName = SecurityUtils.getSubject().getPrincipal().toString();
 		if (loginName != null) {
 			String userId = SecurityUtils.getSubject().getSession().getAttribute("userSessionId").toString();
-			List<ResFormMap> rs = new ArrayList<ResFormMap>();
+			List<ResFormMap> rs = resourcesMapper.findUserResourcess(userId);
 			// 权限信息对象info,用来存放查出的用户的所有的角色（role）及权限（permission）
 			SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-			// 获取用户的角色集合
-			RoleFormMap roleFormMap = new RoleFormMap();
-			roleFormMap.put("userId", userId);
-			List<RoleFormMap> roles = roleMapper.seletUserRole(roleFormMap);
-			HashSet hs = new LinkedHashSet();
-			for (RoleFormMap role : roles) {
-				String roleId = String.valueOf(role.get("id"));
-				if(StringUtils.isNotBlank(roleId)){
-					hs.add(roleId);
-					// 角色对应相应的权限
-					rs = resourcesMapper.findRoleResourcess(roleId);
-					for (ResFormMap resources : rs) {
-						info.addStringPermission(resources.get("resKey").toString());
-					}
-				}
+			// 用户的角色集合
+			// info.addRole("default");
+			// 用户的角色集合
+			// info.setRoles(user.getRolesName());
+			// 用户的角色对应的所有权限，如果只使用角色定义访问权限
+			for (ResFormMap resources : rs) {
+				info.addStringPermission(resources.get("resKey").toString());
 			}
-			info.setRoles(hs);
+
 			return info;
 		}
 		return null;
 	}
-	
-	// lanyuan初始方法备份
-//	@Override
-//	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-//		String loginName = SecurityUtils.getSubject().getPrincipal().toString();
-//		if (loginName != null) {
-//			String userId = SecurityUtils.getSubject().getSession().getAttribute("userSessionId").toString();
-//			List<ResFormMap> rs = resourcesMapper.findUserResourcess(userId);
-//			// 权限信息对象info,用来存放查出的用户的所有的角色（role）及权限（permission）
-//			SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-//			// 用户的角色集合
-//			// info.addRole("default");
-//			// 用户的角色集合
-//			// info.setRoles(user.getRolesName());
-//			// 用户的角色对应的所有权限，如果只使用角色定义访问权限
-//			for (ResFormMap resources : rs) {
-//				info.addStringPermission(resources.get("resKey").toString());
-//			}
-//
-//			return info;
-//		}
-//		return null;
-//	}
 
 	/**
 	 * 认证回调函数,登录时调用

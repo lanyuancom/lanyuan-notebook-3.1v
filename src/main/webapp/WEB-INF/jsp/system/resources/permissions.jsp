@@ -105,7 +105,7 @@ function menu_1_1(obj,id,pid){
 	}
 }
 function closeWin(){
-	layer.confirm('是否关闭窗口？', {icon: 3,offset: '150px'}, function(index) {
+	layer.confirm('是否关闭窗口？', {icon: 3,offset: '-100px'}, function(index) {
     	parent.layer.close(parent.pageii);
     	return false;
 	});
@@ -115,8 +115,7 @@ function sub(){
 			async : false, //请勿改成异步，下面有些程序依赖此请数据
 			type : "POST",
 			data : $("#from").serializeJson(),
-			//url : rootPath + '/resources/addUserRes.shtml',
-			url : rootPath + '/resources/addRoleRes.shtml',
+			url : rootPath + '/resources/addUserRes.shtml',
 			dataType : 'json',
 			success : function(json) {
 				if (json == "success") {
@@ -183,8 +182,8 @@ function sub(){
 </table>
 <br>
 <div class="doc-buttons" style="text-align: center;">
-	<a href="#" class="btn btn-s-md btn-success btn-rounded" onclick="sub()">保存</a>
-	<a href="#" class="btn btn-s-md btn-info btn-rounded" onclick="closeWin();">关闭</a>
+			<a href="#" class="btn btn-s-md btn-success btn-rounded" onclick="sub()">保存</a>
+<a href="#" class="btn btn-s-md btn-info btn-rounded" onclick="closeWin();">关闭</a>
 </div>
 	<br>
 	</form>

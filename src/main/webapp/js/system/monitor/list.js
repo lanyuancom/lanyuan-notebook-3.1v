@@ -36,7 +36,10 @@ $(function() {
 			name : "发送的邮件"
 		} ,{
 			colkey : "operTime",
-			name : "发送的时间"
+			name : "发送的时间",
+			renderData : function(rowindex,data, rowdata, column) {
+				return new Date(data).format("yyyy-MM-dd hh:mm:ss");
+			}
 		} ,{
 			colkey : "mark",
 			name : "备注"

@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.shiro.SecurityUtils;
@@ -34,11 +33,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.lanyuan.entity.ResFormMap;
-import com.lanyuan.entity.RoleFormMap;
 import com.lanyuan.entity.UserFormMap;
 import com.lanyuan.entity.UserLoginFormMap;
 import com.lanyuan.mapper.ResourcesMapper;
-import com.lanyuan.mapper.RoleMapper;
 import com.lanyuan.mapper.UserLoginMapper;
 import com.lanyuan.util.Common;
 import com.lanyuan.util.TreeObject;
@@ -62,9 +59,6 @@ public class BackgroundController extends BaseController {
 
 	@Inject
 	private UserLoginMapper userLoginMapper;
-	
-	@Inject
-	private RoleMapper roleMapper;
 	
 	/**
 	 * @return
@@ -130,20 +124,15 @@ public class BackgroundController extends BaseController {
 		// 获取登录的bean
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
 		UserFormMap userFormMap = (UserFormMap)Common.findUserSession(request);
-		RoleFormMap roleFormMap = new RoleFormMap();
-		roleFormMap.put("userId", userFormMap.get("id"));
-		List<RoleFormMap> roles = roleMapper.seletUserRole(roleFormMap);
+		ResFormMap resFormMap = new ResFormMap();
+		resFormMap.put("userId", userFormMap.get("id"));
+		List<ResFormMap> mps = resourcesMapper.findRes(resFormMap);
+		//List<ResFormMap> mps = resourcesMapper.findByWhere(new ResFormMap());
 		List<TreeObject> list = new ArrayList<TreeObject>();
-		for (RoleFormMap role : roles) {
-			String roleId = String.valueOf(role.get("id"));
-			if(StringUtils.isNotBlank(roleId)){
-				List<ResFormMap> mps = resourcesMapper.findRoleResourcess(roleId);
-				for (ResFormMap map : mps) {
-					TreeObject ts = new TreeObject();
-					Common.flushObject(ts, map);
-					list.add(ts);
-				}
-			}
+		for (ResFormMap map : mps) {
+			TreeObject ts = new TreeObject();
+			Common.flushObject(ts, map);
+			list.add(ts);
 		}
 		TreeUtil treeUtil = new TreeUtil();
 		List<TreeObject> ns = treeUtil.getChildTreeObjects(list, 0);

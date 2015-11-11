@@ -141,39 +141,3 @@ CREATE TABLE `ly_user_role` (
 INSERT INTO `ly_user_role` VALUES ('1', '2');
 INSERT INTO `ly_user_role` VALUES ('2', '3');
 INSERT INTO `ly_user_role` VALUES ('3', '1');
-
--- ----------------------------
--- Table structure for ly_role_res
--- ----------------------------
-DROP TABLE IF EXISTS `ly_role_res`;
-CREATE TABLE `ly_role_res` (
-  `roleId` int(11) NOT NULL,
-  `resId` int(11) NOT NULL,
-  PRIMARY KEY (`roleId`,`resId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of ly_role_res
--- ----------------------------
-INSERT INTO `ly_role_res` VALUES ('1', '1');
-INSERT INTO `ly_role_res` VALUES ('1', '2');
-INSERT INTO `ly_role_res` VALUES ('1', '3');
-INSERT INTO `ly_role_res` VALUES ('1', '4');
-INSERT INTO `ly_role_res` VALUES ('1', '5');
-INSERT INTO `ly_role_res` VALUES ('1', '6');
-INSERT INTO `ly_role_res` VALUES ('1', '7');
-INSERT INTO `ly_role_res` VALUES ('1', '8');
-INSERT INTO `ly_role_res` VALUES ('1', '9');
-INSERT INTO `ly_role_res` VALUES ('1', '10');
-INSERT INTO `ly_role_res` VALUES ('1', '11');
-INSERT INTO `ly_role_res` VALUES ('1', '25');
-INSERT INTO `ly_role_res` VALUES ('1', '26');
-INSERT INTO `ly_role_res` VALUES ('1', '27');
-INSERT INTO `ly_role_res` VALUES ('1', '28');
-INSERT INTO `ly_role_res` VALUES ('1', '29');
-INSERT INTO `ly_role_res` VALUES ('1', '30');
-INSERT INTO `ly_role_res` VALUES ('1', '31');
-INSERT INTO `ly_role_res` VALUES ('1', '32');
-INSERT INTO `ly_role_res` VALUES ('1', '33');
-INSERT INTO `ly_role_res` VALUES ('1', '34');
-INSERT INTO `ly_role_res` VALUES ('1', '35');
