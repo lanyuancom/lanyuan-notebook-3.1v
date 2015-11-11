@@ -124,7 +124,7 @@ function sub(){
 				        	return false;
  						 });
 				} else {
-					layer.alert("分配失败！！",{icon: 3,offset: '-100px'});
+					layer.alert(json,{icon: 2,offset: '-100px'});
 				}
 				;
 			}

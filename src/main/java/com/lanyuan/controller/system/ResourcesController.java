@@ -247,6 +247,9 @@ public class ResourcesController extends BaseController {
 			}
 		}
 		userId = Common.trimComma(userId);
+		if(Common.isEmpty(userId)){
+			return "分配失败,该角色下没有用户!";
+		}
 		String[] users = userId.split(",");
 		for (String uid : users) {
 			resourcesMapper.deleteByAttribute("userId", uid, ResUserFormMap.class);
