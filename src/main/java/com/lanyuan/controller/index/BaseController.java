@@ -192,4 +192,48 @@ public class BaseController {
 		}
 		return  t;
 	}
+	
+	/**
+	 * 获取传递的所有参数,
+	 * 再设置属性值
+	 * 通过回传Map对象.
+	 * <br/>
+	 *<b>author：</b><br/> 
+	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsplijianning</b><br/> 
+	 *<b>date：</b><br/> 
+	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp2015-04-01</b><br/> 
+	 *<b>version：</b><br/> 
+	 *<b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp1.0v</b>
+	 * @return Class<T>
+	 * @throws Exception
+	 */
+	public <T> T findHasHMap(Class<T> clazz){
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();  
+		Enumeration<String> en = request.getParameterNames();
+		T t = null;
+		try {
+			t = clazz.newInstance();
+			@SuppressWarnings("unchecked")
+			FormMap<String, Object> map = (FormMap<String, Object>) t;
+			while (en.hasMoreElements()) {
+				String nms = en.nextElement().toString();
+				if(!"_t".equals(nms)){
+					if(nms.endsWith("[]")){
+						String[] as = request.getParameterValues(nms);
+						if(as!=null&&as.length!=0&&as.toString()!="[]"){
+							map.put( nms,as);
+						}
+					}else{
+						String as = request.getParameter(nms);
+						if(!Common.isEmpty(as)){
+							map.put( nms, as);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return t;
+	}
 }

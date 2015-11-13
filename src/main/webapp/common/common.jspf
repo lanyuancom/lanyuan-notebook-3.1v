@@ -32,6 +32,7 @@ user-scalable - 用户是否可以手动缩放
 <script type="text/javascript" src="${ctx}/js/jquery/jquery-validation/messages_cn.js"></script>
 <script type="text/javascript" src="${ctx}/js/layer-v1.9.2/layer/layer.js"></script>
 <script type="text/javascript" src="${ctx}/common/common.js"></script>
+<script type="text/javascript" src="${ctx}/js/jquery/underscore.js"></script>
 <script type="text/javascript" src="${ctx}/common/lyGrid.js"></script>
 <!--[if lt IE 9]> <script src="${ctx}/js/jquery/ie/html5shiv.js"></script> <script src="${ctx}/js/jquery/ie/respond.min.js"></script><![endif]-->
 <style type="text/css">

@@ -134,3 +134,19 @@
 .table-bordered>thead>tr>th, .table-bordered>thead>tr>td{
 	border-bottom-width:0px;
 }
+.wj-glyph-up{
+ display: inline-block;
+  border-right: .4em solid transparent;
+  border-bottom: .5em solid;
+  border-left: .4em solid transparent;
+  opacity: .75;
+  margin-left: 3px;
+}
+.wj-glyph-down{
+  display: inline-block;
+  border-top: .5em solid;
+  border-right: .4em solid transparent;
+  border-left: .4em solid transparent;
+  opacity: .75;
+  margin-left: 3px;
+}

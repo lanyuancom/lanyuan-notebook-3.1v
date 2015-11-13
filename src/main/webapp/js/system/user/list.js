@@ -1,6 +1,7 @@
 var pageii = null;
 var grid = null;
 $(function() {
+	
 	grid = lyGrid({
 		pagId : 'paging',
 		l_column : [ {
@@ -8,23 +9,27 @@ $(function() {
 			name : "id",
 		}, {
 			colkey : "userName",
-			name : "用户名"
+			name : "用户名",
+			isSort:true,
 		}, {
 			colkey : "accountName",
-			name : "账号"
+			name : "账号",
+			isSort:true,
 		}, {
 			colkey : "roleName",
-			name : "所属角色",
+			name : "所属角色"
 		}, {
 			colkey : "locked",
 			name : "账号状态",
-			width : '90px'
+			width : '90px',
+			isSort:true
 		}, {
 			colkey : "description",
 			name : "描述"
 		}, {
 			colkey : "createTime",
 			name : "时间",
+			isSort:true,
 			renderData : function(rowindex,data, rowdata, column) {
 				return new Date(data).format("yyyy-MM-dd hh:mm:ss");
 			}

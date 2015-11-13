@@ -1,7 +1,13 @@
 package com.lanyuan.controller.system;
 
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +24,8 @@ import com.lanyuan.entity.UserGroupsFormMap;
 import com.lanyuan.exception.SystemException;
 import com.lanyuan.plugin.PageView;
 import com.lanyuan.util.Common;
+import com.lanyuan.util.JsonUtils;
+import com.lanyuan.util.POIUtils;
 import com.lanyuan.util.PasswordHelper;
 
 /**
@@ -41,11 +49,32 @@ public class UserController extends BaseController {
 	@ResponseBody
 	@RequestMapping("findByPage")
 	public PageView findByPage( String pageNow,
-			String pageSize) throws Exception {
+			String pageSize,String column,String sort) throws Exception {
 		UserFormMap userFormMap = getFormMap(UserFormMap.class);
 		userFormMap=toFormMap(userFormMap, pageNow, pageSize);
+		userFormMap.put("column", column);
+		userFormMap.put("sort", sort);
         pageView.setRecords(userMapper.findUserPage(userFormMap));//不调用默认分页,调用自已的mapper中findUserPage
         return pageView;
+	}
+	
+	@RequestMapping("/export")
+	public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String fileName = "用户列表";
+		UserFormMap userFormMap = findHasHMap(UserFormMap.class);
+		//exportData = 
+		// [{"colkey":"sql_info","name":"SQL语句","hide":false},
+		// {"colkey":"total_time","name":"总响应时长","hide":false},
+		// {"colkey":"avg_time","name":"平均响应时长","hide":false},
+		// {"colkey":"record_time","name":"记录时间","hide":false},
+		// {"colkey":"call_count","name":"请求次数","hide":false}
+		// ]
+		String exportData = userFormMap.getStr("exportData");// 列表头的json字符串
+
+		List<Map<String, Object>> listMap = JsonUtils.parseJSONList(exportData);
+
+		List<UserFormMap> lis = userMapper.findUserPage(userFormMap);
+		POIUtils.exportToExcel(response, listMap, lis, fileName);
 	}
 
 	@RequestMapping("addUI")

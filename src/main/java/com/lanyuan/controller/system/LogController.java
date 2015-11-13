@@ -33,9 +33,15 @@ public class LogController extends BaseController {
 	@ResponseBody
 	@RequestMapping("findByPage")
 	public PageView findByPage( String pageNow,
-			String pageSize) throws Exception {
+			String pageSize,String column,String sort) throws Exception {
 		LogFormMap logFormMap = getFormMap(LogFormMap.class);
-		String order = " order by id asc";
+		String order = "";
+		if(Common.isNotEmpty(column)){
+			order = " order by "+column+" "+sort;
+		}else{
+			order = " order by id asc";
+		}
+		
 		logFormMap.put("$orderby", order);
 		logFormMap=toFormMap(logFormMap, pageNow, pageSize);
         pageView.setRecords(logMapper.findByPage(logFormMap));
