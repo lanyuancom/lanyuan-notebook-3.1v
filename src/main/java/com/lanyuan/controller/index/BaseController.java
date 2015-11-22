@@ -28,7 +28,7 @@ public class BaseController {
 	private ResourcesMapper resourcesMapper;
 	
 	public PageView pageView = null;
-	public PageView getPageView(String pageNow,String pageSize) {
+	public PageView getPageView(String pageNow,String pageSize,String orderby) {
 		if (Common.isEmpty(pageNow)) {
 			pageView = new PageView(1);
 		} else {
@@ -38,13 +38,14 @@ public class BaseController {
 			pageSize = "10";
 		} 
 		pageView.setPageSize(Integer.parseInt(pageSize));
+		pageView.setOrderby(orderby);
 		return pageView;
 	}
 	
-	public <T> T toFormMap(T t,String pageNow,String pageSize){
+	public <T> T toFormMap(T t,String pageNow,String pageSize,String orderby){
 		@SuppressWarnings("unchecked")
 		FormMap<String, Object> formMap = (FormMap<String, Object>) t;
-		formMap.put("paging", getPageView(pageNow, pageSize));
+		formMap.put("paging", getPageView(pageNow, pageSize,orderby));
 		return t;
 	}
 	
@@ -162,6 +163,7 @@ public class BaseController {
 			t = clazz.newInstance();
 			@SuppressWarnings("unchecked")
 			FormMap<String, Object> map = (FormMap<String, Object>) t;
+			String order = "",sort="";
 			while (en.hasMoreElements()) {
 				String nms = en.nextElement().toString();
 				if(nms.endsWith("[]")){
@@ -181,10 +183,13 @@ public class BaseController {
 							nms=nms.substring(mname.length()+1);
 							map.put( nms, as);
 						}
-						
+						if(nms.toLowerCase().equals("column"))order = as;
+						if(nms.toLowerCase().equals("sort"))sort = as;
 					}
 				}
 			}
+			if(!Common.isEmpty(order) && !Common.isEmpty(sort))
+				map.put("orderby", " order by " + order + " " + sort);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

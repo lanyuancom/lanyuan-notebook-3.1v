@@ -158,7 +158,7 @@ public class Plugin implements InvocationHandler {
 				param = param.substring(param.indexOf("and") + 4);
 				sql += " where " + param;
 			}
-			Object by = formMap.get("$orderby");
+			Object by = formMap.get("orderby");
 			if (null != by) {
 				sql += " " + by;
 			}
@@ -209,7 +209,7 @@ public class Plugin implements InvocationHandler {
 				sql += " where " + param;
 
 			}
-			Object by = formMap.get("$orderby");
+			Object by = formMap.get("orderby");
 			if (null != by) {
 				sql += " " + by;
 			}

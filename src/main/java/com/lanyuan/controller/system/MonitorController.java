@@ -42,7 +42,7 @@ public class MonitorController extends BaseController {
 	public PageView findByPage( String pageNow,
 			String pageSize) throws Exception {
 		ServerInfoFormMap serverInfoFormMap = getFormMap(ServerInfoFormMap.class);
-		serverInfoFormMap=toFormMap(serverInfoFormMap, pageNow, pageSize);
+		serverInfoFormMap=toFormMap(serverInfoFormMap, pageNow, pageSize,serverInfoFormMap.getStr("orderby"));
         pageView.setRecords(serverInfoMapper.findByPage(serverInfoFormMap));
 		return pageView;
 	}

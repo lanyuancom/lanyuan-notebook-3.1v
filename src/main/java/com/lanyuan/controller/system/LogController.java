@@ -43,7 +43,7 @@ public class LogController extends BaseController {
 		}
 		
 		logFormMap.put("$orderby", order);
-		logFormMap=toFormMap(logFormMap, pageNow, pageSize);
+		logFormMap=toFormMap(logFormMap, pageNow, pageSize,logFormMap.getStr("orderby"));
         pageView.setRecords(logMapper.findByPage(logFormMap));
 		return pageView;
 	}

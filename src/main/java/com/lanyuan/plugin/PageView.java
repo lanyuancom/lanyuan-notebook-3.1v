@@ -9,6 +9,11 @@ import java.util.List;
  */
 public class PageView {
 	/**
+	 * 排序规则
+	 */
+	private String orderby;
+	
+	/**
 	 * 分页数据
 	 */
 	private List<?> records;
@@ -151,9 +156,18 @@ public class PageView {
 		this.pageCount = pageCount;
 	}
 
+	public String getOrderby() {
+		return orderby;
+	}
+
+	public void setOrderby(String orderby) {
+		this.orderby = orderby;
+	}
+
 	@Override
 	public String toString() {
-		return "PageView [ pageCount=" + pageCount + ", pageSize=" + pageSize + ", pageNow=" + pageNow + ", rowCount=" + rowCount + ", startPage=" + startPage + ", pagecode=" + pagecode + "]";
+		return "PageView [ pageCount=" + pageCount + ", pageSize=" + pageSize + ", pageNow=" + pageNow 
+			+ ", rowCount=" + rowCount + ", startPage=" + startPage + ", pagecode=" + pagecode + ",orderby=" + orderby + "]";
 	}
 
 }

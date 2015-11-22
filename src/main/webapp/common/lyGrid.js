@@ -194,11 +194,17 @@
 			$.each(column, function(o) {
 				if (!column[o].hide || column[o].hide == undefined) {
 					var th = document.createElement('th');
-					th.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;");
+					var style = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight 
+						+ ";vertical-align: middle;background-position: right;padding-right: 10px;background-repeat: no-repeat;";
 					if(column[o].isSort){
-						th.innerHTML = column[o].name+'<span class="wj-glyph-up"></span>';
+						img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC";
+						th.setAttribute("style", style+"background-image:url('"+img+"')");
+						th.innerHTML = column[o].name + '<img src='+img+'>';
+						//+'<img src='+rootPath+'"/images/up.png">';
 					}else{
-						th.innerHTML = column[o].name;
+						img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC";
+						th.setAttribute("style", style+"background-image:url('"+img+"')");
+						th.innerHTML = column[o].name+'<img src="'+img+'">';
 					}
 					tr.appendChild(th);
 				}
@@ -260,15 +266,21 @@
 				$.each(column, function(o) {
 					if (!column[o].hide || column[o].hide == undefined) {
 						var th = document.createElement('th');
-						var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;";
+						th.setAttribute("title", column[o].colkey);
+						var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight 
+							+ ";vertical-align: middle;background-position: right;padding-right: 10px;";
+						var img="";
 						if(column[o].isSort){
-							th.innerHTML = column[o].name+'<span class="wj-glyph-up" title="'+column[o].colkey+',asc"></span>';
-							th.onclick = sortBind.bind();
-							at+="cursor:pointer;";
+							img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZ0lEQVQ4y2NgGLKgquEuFxBPAGI2ahhWCsS/gDibUoO0gPgxEP8H4ttArEyuQYxAPBdqEAxPBImTY5gjEL9DM+wTENuQahAvEO9DMwiGdwAxOymGJQLxTyD+jgWDxCMZRsEoGAVoAADeemwtPcZI2wAAAABJRU5ErkJggg==";
+							th.innerHTML = column[o].name+'<img title="'+column[o].colkey+',asc" src="'+img+'">';
+							//+rootPath+'/images/up.png">';
 						}else{
-							th.innerHTML = column[o].name;
+							img="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC";
+							th.innerHTML = column[o].name + '<img title="'+column[o].colkey+'" src="'+img+'">';
 						}
-						th.setAttribute("style", at);
+						th.onclick = sortBind.bind();
+						at+="cursor:pointer;";
+						th.setAttribute("style", at);// + "background-image:url('"+img+"')");
 						tr.appendChild(th);
 					}
 				});
@@ -881,18 +893,47 @@
 			var th = evt.srcElement || evt.target;
 			var t = th.title.split(",");
 			if(t[0]==""){
-				th=th.firstElementChild
+				th=th.firstElementChild;
 				t=th.title.split(",");
 			}
-			var sc = "";
-			if(t[1]=="asc"){
-				th.className="wj-glyph-down";
-				th.title=t[0]+",desc";
-				sc="desc";
+			var sc = "",ele,node='0';
+			if(th.nodeName == 'TH' || th.nodeName == 'th'){
+				ele = th.parentElement;
+			}else
+				ele = th.parentElement.parentElement;
+			for(var i=0;i<ele.cells.length;i++){
+				child = ele.cells[i];
+				fe = child.firstElementChild;
+				if(null == fe);
+				else{
+					//console.log ("node = " + fe.title);
+					fe.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC";
+				}
+			}
+			if(th.nodeName == 'TH' || th.nodeName == 'th'){
+				if(t[1] == '' || null == t[1] || t[1] == 'desc'){
+					th.lastChild.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZ0lEQVQ4y2NgGLKgquEuFxBPAGI2ahhWCsS/gDibUoO0gPgxEP8H4ttArEyuQYxAPBdqEAxPBImTY5gjEL9DM+wTENuQahAvEO9DMwiGdwAxOymGJQLxTyD+jgWDxCMZRsEoGAVoAADeemwtPcZI2wAAAABJRU5ErkJggg==';
+					th.lastChild.title=t[0]+",asc";
+					th.title = t[0]+',asc';
+					sc = 'asc';
+				}else{
+					th.lastChild.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZUlEQVQ4y2NgGAWjYBSggaqGu5FA/BOIv2PBIPFEUgxjB+IdQPwfC94HxLykus4GiD+hGfQOiB3J8SojEE9EM2wuSJzcsFMG4ttQgx4DsRalkZENxL+AuJQaMcsGxBOAmGvopk8AVz1sLZgg0bsAAAAASUVORK5CYII= ';
+					th.lastChild.title=t[0]+",desc";
+					th.title=t[0]+',desc';
+					sc="desc";
+				}
 			}else{
-				th.className="wj-glyph-up";
-				th.title=t[0]+",asc";
-				sc="asc";
+				if(t[1]=="asc"){
+					//th.src=rootPath+'/images/dp.png';
+					th.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZUlEQVQ4y2NgGAWjYBSggaqGu5FA/BOIv2PBIPFEUgxjB+IdQPwfC94HxLykus4GiD+hGfQOiB3J8SojEE9EM2wuSJzcsFMG4ttQgx4DsRalkZENxL+AuJQaMcsGxBOAmGvopk8AVz1sLZgg0bsAAAAASUVORK5CYII= ';
+					th.title=t[0]+",desc";
+					sc="desc";
+				}else{
+					//th.src=rootPath+'/images/up.png';
+					th.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZ0lEQVQ4y2NgGLKgquEuFxBPAGI2ahhWCsS/gDibUoO0gPgxEP8H4ttArEyuQYxAPBdqEAxPBImTY5gjEL9DM+wTENuQahAvEO9DMwiGdwAxOymGJQLxTyD+jgWDxCMZRsEoGAVoAADeemwtPcZI2wAAAABJRU5ErkJggg==';
+					th.title=t[0]+",asc";
+					sc="asc";
+				}
 			}
 			conf.data = $.extend(conf.data, {
 				column:t[0],sort:sc
