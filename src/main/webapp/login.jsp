@@ -18,13 +18,9 @@
 <link
 	href="${pageContext.servletContext.contextPath }/admin_files/css.css"
 	rel="stylesheet" type="text/css">
-<script type="text/javascript">
-if(window.location.href.indexOf("/login.shtml")==-1){
-	top.location.href="login.shtml";
-}
-</script>
+
 </head>
-<body
+<body onload="javascript:to_top()" 
 	style="background-image: url('${pageContext.servletContext.contextPath }/admin_files/9.jpg');margin-top:0px;background-repeat: round;"">
 	<div id="loginbox" style="padding-top: 10%;">
 		<form id="loginform" name="loginform" class="form-vertical"
@@ -43,7 +39,6 @@ if(window.location.href.indexOf("/login.shtml")==-1){
 							alt="Logo"></td>
 					</tr>
 				</table>
-
 
 			</div>
 			<div class="control-group">
@@ -83,6 +78,11 @@ if(window.location.href.indexOf("/login.shtml")==-1){
 		};
 		function checkUserForm() {
 			document.loginform.submit();
+		}
+		function to_top(){
+			if(window != top){
+		        top.location.href=location.href;
+		    }
 		}
 	</script>
 </body>
