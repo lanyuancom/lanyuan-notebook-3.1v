@@ -36,7 +36,7 @@ public class ConfigUtils {
 					pro.getProperty("jdbc.password")); // 2、连接数据库
 			String packageName = "com.lanyuan.entity";
 			// List<String> classNames = getClassName(packageName);
-			List<String> classNames = ClassUtil.getClassName(packageName, false);
+			List<String> classNames = ClassUtil.getClassName(packageName, true);//true包含子目录
 			String tabs = "";
 			if (classNames != null) {
 				for (String className : classNames) {
