@@ -2,8 +2,8 @@
 <html lang="en"
 	class="app">
 <head>
+    
 <%@include file="/common/common.jspf"%>
-<script type="text/javascript" src="${ctx}/js/system/user/updatePassword.js"></script>
 <script type="text/javascript">
 	$(function() {
     //修改时间2015年10月13日14:32:57

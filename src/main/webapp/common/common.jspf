@@ -35,6 +35,13 @@ user-scalable - 用户是否可以手动缩放
 <script type="text/javascript" src="${ctx}/js/jquery/underscore.js"></script>
 <script type="text/javascript" src="${ctx}/common/lyGrid.js"></script>
 <!--[if lt IE 9]> <script src="${ctx}/js/jquery/ie/html5shiv.js"></script> <script src="${ctx}/js/jquery/ie/respond.min.js"></script><![endif]-->
+<link href="${ctx}/js/date/bootstrap.min.css" rel="stylesheet">
+<link href="${ctx}/js/date/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="all" href="${ctx}/js/date/daterangepicker-bs3.css" />
+<script type="text/javascript" src="${ctx}/js/date/bootstrap.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/date/moment.js"></script>
+<script type="text/javascript" src="${ctx}/js/date/daterangepicker.js"></script>
+<script type="text/javascript" src="${ctx}/js/system/user/updatePassword.js"></script>
 <style type="text/css">
 .l_err{
     background: none repeat scroll 0 0 #FFFCC7;
@@ -56,6 +63,9 @@ user-scalable - 用户是否可以手动缩放
 }
 .right{
 	text-align: right;
+}
+.hidden-xs{
+	display: inherit;
 }
 </style>
 <!-- base end -->

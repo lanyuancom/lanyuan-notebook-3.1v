@@ -84,6 +84,7 @@ public class PropertiesUtils {
 		try {
 			InputStream in =new BufferedInputStream(new FileInputStream(savePath));  
 			prop.load(in);
+			in.close();
 		} catch (Exception e) {
 			return null;
 		}
