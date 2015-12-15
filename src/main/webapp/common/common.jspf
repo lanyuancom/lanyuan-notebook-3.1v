@@ -37,11 +37,13 @@ user-scalable - 用户是否可以手动缩放
 <!--[if lt IE 9]> <script src="${ctx}/js/jquery/ie/html5shiv.js"></script> <script src="${ctx}/js/jquery/ie/respond.min.js"></script><![endif]-->
 <link href="${ctx}/js/date/bootstrap.min.css" rel="stylesheet">
 <link href="${ctx}/js/date/font-awesome.min.css" rel="stylesheet">
+<%-- 
+    时间控件 -------- 可能导致样式问题,和某些js事件失效 如加上,,自行处理
 <link rel="stylesheet" type="text/css" media="all" href="${ctx}/js/date/daterangepicker-bs3.css" />
 <script type="text/javascript" src="${ctx}/js/date/bootstrap.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/date/moment.js"></script>
 <script type="text/javascript" src="${ctx}/js/date/daterangepicker.js"></script>
-<script type="text/javascript" src="${ctx}/js/system/user/updatePassword.js"></script>
+<script type="text/javascript" src="${ctx}/js/system/user/updatePassword.js"></script> --%>
 <style type="text/css">
 .l_err{
     background: none repeat scroll 0 0 #FFFCC7;
