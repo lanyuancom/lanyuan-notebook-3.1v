@@ -1080,8 +1080,11 @@
 			for(var p in par){
 				var input1=$("<input>");
 				input1.attr("type","hidden");
-				input1.attr("name",p);
 				input1.attr("value",par[p]);
+				if(p.indexOf(".")>0){
+					p = p.split(".")[1];
+				}
+				input1.attr("name",p);
 				form.append(input1);
 			}
 			form.submit();//表单提交 
