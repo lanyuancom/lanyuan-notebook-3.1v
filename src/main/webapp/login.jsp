@@ -1,7 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<html lang="en"
-	class="app js no-touch no-android chrome no-firefox no-iemobile no-ie no-ie10 no-ie11 no-ios no-ios7 ipad">
+<html lang="en"	class="app js no-touch no-android chrome no-firefox no-iemobile no-ie no-ie10 no-ie11 no-ios no-ios7 ipad">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <!-- Google Chrome Frame也可以让IE用上Chrome的引擎: -->
@@ -9,19 +8,18 @@
 <link href="/favicon.ico" type="image/x-icon" rel=icon>
 <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
 <meta name="renderer" content="webkit">
-<title>登录－蓝缘管理系统</title>
+<title>登录－石林龙井山养鸡专业合作社管理系统</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet"
-	href="${pageContext.servletContext.contextPath }/admin_files/min.css">
-<link rel="stylesheet"
-	href="${pageContext.servletContext.contextPath }/admin_files/login.css">
-<link
-	href="${pageContext.servletContext.contextPath }/admin_files/css.css"
-	rel="stylesheet" type="text/css">
-
+<link rel="stylesheet"	href="${pageContext.servletContext.contextPath }/admin_files/min.css">
+<link rel="stylesheet"	href="${pageContext.servletContext.contextPath }/admin_files/login.css">
+<link	href="${pageContext.servletContext.contextPath }/admin_files/css.css"	rel="stylesheet" type="text/css">
+<!--[if lt IE 9]> 
+	<script src="${ctx}/js/jquery/ie/html5shiv.js"></script> 
+	<script src="${ctx}/js/jquery/ie/respond.min.js"></script>
+<![endif]-->
 </head>
 <body onload="javascript:to_top()" 
-	style="background-image: url('${pageContext.servletContext.contextPath }/admin_files/9.jpg');margin-top:0px;background-repeat: round;"">
+	style="background-image: url('${pageContext.servletContext.contextPath }/admin_files/9.jpg');margin-top:0px;background-repeat:no-repeat;background-size: 100% auto;">
 	<div id="loginbox" style="padding-top: 10%;">
 		<form id="loginform" name="loginform" class="form-vertical"
 			style="background-color: rgba(0, 0, 0, 0.5) !important; background: #000; filter: alpha(opacity = 50); *background: #000; *filter: alpha(opacity = 50); /*黑色透明背景结束*/ color: #FFF; bottom: 0px; right: 0px; border: 1px solid #000;"
@@ -33,7 +31,7 @@
 						<td align="left"><img
 							src="${pageContext.servletContext.contextPath }/admin_files/logo_left.png"
 							alt="Logo"></td>
-							<td align="center" style="font-weight: bold;color: gray;">蓝缘管理系统</td>
+							<td align="center" style="font-weight: bold;color: gray;">石林龙井山养鸡专业合作社管理系统</td>
 						<td align="right"><img
 							src="${pageContext.servletContext.contextPath }/admin_files/logo_left.png"
 							alt="Logo"></td>
