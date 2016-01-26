@@ -45,6 +45,8 @@
 			colkey : null,
 			name : null,
 			width : 'auto',
+			theadClass:'',
+			tbodyClass:'',
 			height : 'auto',
 			align : 'center',
 			hide : false,
@@ -74,6 +76,7 @@
 		var column = conf.l_column;
 		var init = function() {
 			createHtml();
+			//fixhead();
 		};
 		var extend = function(o, n, override) {
 			for ( var p in n)
@@ -103,7 +106,7 @@
 						json = data;
 					},
 					error : function(msg) {
-						alert("列表数据异常！");
+//						alert("系统暂无数据！");
 						json = '';
 					}
 				});
@@ -193,6 +196,7 @@
 			$.each(column, function(o) {
 				if (!column[o].hide || column[o].hide == undefined) {
 					var th = document.createElement('th');
+					th.className=column[o].theadClass;
 					th.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;");
 					if(column[o].isSort){
 						th.innerHTML = column[o].name+'<span class="wj-glyph-up"></span>';
@@ -259,6 +263,7 @@
 				$.each(column, function(o) {
 					if (!column[o].hide || column[o].hide == undefined) {
 						var th = document.createElement('th');
+						th.className=column[o].theadClass;
 						var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;";
 						if(column[o].isSort){
 							th.innerHTML = column[o].name+'<span class="wj-glyph-up" title="'+column[o].colkey+',asc"></span>';
@@ -274,6 +279,8 @@
 			}
 
 		};
+		
+		var currentData;//当前页数据
 		var cBodytb = function(divId,jsonData){
 			$('#'+divId.id+' table > tbody').remove() ;
 			$('#'+divId.id+' div:eq(1)').remove() ;
@@ -287,9 +294,11 @@
 				d = (pNow - 1) *conf.pageSize;
                 var e = pNow * conf.pageSize - 1;
 			}
-
-			for(;d<=e;d++){
-				if(CommnUtil.notNull(json[d])){
+			currentData = new Array();//当前页数据
+			for(;d<e;d++){
+				var rowdata = json[d];
+				currentData.push(rowdata);
+				if(CommnUtil.notNull(rowdata)){
 					var tr = document.createElement('tr');
 					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
 					var sm = parseInt(tee.substring(tee.length-1),10)+1;
@@ -315,19 +324,19 @@
 					var chkbox = document.createElement("INPUT");
 					chkbox.type = "checkbox";
 					// ******** 树的上下移动需要
-					chkbox.setAttribute("cid", _getValueByName(json[d], l_tree.id));
-					chkbox.setAttribute("pid", _getValueByName(json[d], l_tree.pid));
+					chkbox.setAttribute("cid", _getValueByName(rowdata, l_tree.id));
+					chkbox.setAttribute("pid", _getValueByName(rowdata, l_tree.pid));
 					// ******** 树的上下移动需要
 					chkbox.setAttribute("_l_key", "checkbox");
-					chkbox.value = _getValueByName(json[d], conf.checkValue);
+					chkbox.value = _getValueByName(rowdata, conf.checkValue);
 					chkbox.onclick = highlight.bind(this);
 					td_d.appendChild(chkbox); // 第一列添加复选框
 					$.each(column, function(o) {
 						if (!column[o].hide || column[o].hide == undefined) {
 							var td_o = tr.insertCell(-1);
-							td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;word-break: keep-all;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;");
+							td_o.className=column[o].tbodyClass;
+							td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;");
 
-							var rowdata = json[d];
 							var clm = column[o].colkey;
 							var data = CommnUtil.notEmpty(_getValueByName(rowdata, clm));
 
@@ -373,7 +382,7 @@
 					if (l_tree.tree){
 						if(l_tree.type==1){
 							tee=tee+"-0";
-							treeHtml(tbody, json[d]);// 树形式
+							treeHtml(tbody, rowdata);// 树形式
 						}else {
 							var obj = json[d];
 							delete json[d];
@@ -1026,6 +1035,11 @@
 		 * 查询时，设置参数查询
 		 */
 		var setOptions = function(params) {
+			var data;
+			if(params.data){
+				data=$.extend(conf.data, params.data);
+				params.data=data;
+			}
 			$.extend(conf, params);
 			replayData();
 		};
@@ -1063,7 +1077,9 @@
 			 });
 			 return ret;
 		};
-		
+		var getColumn = function(){
+			return column;
+		};
 		var exportData = function(url){
 			var form=$("<form>");//定义一个form表单
 			form.attr("style","display:none");
@@ -1089,7 +1105,9 @@
 			}
 			form.submit();//表单提交 
 		}
-		
+		var getCurrentData = function(){
+			return currentData;
+		}
 		init();
 
 		return {
@@ -1100,9 +1118,11 @@
 			selectTreeRow : selectTreeRow,
 			lyGridUp : lyGridUp,//上移
 			lyGridDown : lyGridDown,//下移
-			rowline : rowline,//
+			rowline : rowline,
 			resultJSONData : jsonRequest,//返回列表的所有json数据
-			exportData:exportData//导出数据
+			exportData:exportData,//导出数据
+			getColumn :getColumn,//获取表头
+			getCurrentData:getCurrentData//获取表格的当前页json数据
 		};
 	});
 })();
@@ -1122,4 +1142,5 @@ var fixhead = function() {
 	 */
 };
 $(window).resize(function() {
+	//fixhead();
 });

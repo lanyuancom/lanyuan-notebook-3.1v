@@ -1,6 +1,7 @@
 package junit.test;
 
 
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -11,7 +12,7 @@ import com.lanyuan.mapper.base.BaseMapper;
 public class ResourcesServiceImplTest {
 
 	@SuppressWarnings({ "resource" })
-	//@Test
+	@Test
 	public void test() throws Exception {
 		        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-*.xml");  
 		        BaseMapper bean = (BaseMapper)ctx.getBean("baseMapper");
