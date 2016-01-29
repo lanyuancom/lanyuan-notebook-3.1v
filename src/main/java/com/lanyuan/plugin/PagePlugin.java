@@ -77,7 +77,9 @@ public class PagePlugin implements Interceptor {
 								String sql = Plugin.joinSql(connection, mappedStatement, boundSql, formMap,lists);
 								ReflectHelper.setValueByFieldName(boundSql, "sql", sql);
 								return ivk.proceed();
-							}else{
+							} else if ("HashMap".equals(parameterObject.getClass().getSimpleName())) {
+								return ivk.proceed();
+							} else{
 								Class fm = (Class) map.get("param3");
 								Object o = fm.newInstance();
 								formMap = toHashMap(o);

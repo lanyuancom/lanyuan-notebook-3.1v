@@ -162,4 +162,17 @@ public interface BaseMapper {
 	 * <b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp3.0v</b>
 	 */
 	public <T> T findbyFrist(String key,String value,Class<T> clazz);
+	/**
+	 * 1：获取表字段存在放缓存 <br/>
+	 * <b>author：</b><br/>
+	 * <b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsplanyuan</b><br/>
+	 * <b>date：</b><br/>
+	 * <b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp2015-12-01</b><br/>
+	 * <b>version：</b><br/>
+	 * <b>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp4.0v</b>
+	 * 
+	 * @return List<Map<?, ?>>
+	 */
+	public <T> List<T> initTableField(T formMap);
+	
 }

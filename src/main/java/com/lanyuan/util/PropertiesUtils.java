@@ -4,9 +4,12 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Map.Entry;
+
+import org.apache.ibatis.io.Resources;
 /**
  * 对属性文件操作的工具类
  * 获取，新增，修改
@@ -62,13 +65,9 @@ public class PropertiesUtils {
 	 */
 	public static Properties getProperties(){
 		Properties prop = new Properties();
-		String savePath = PropertiesUtils.class.getResource("/config.properties").getPath();
-		//以下方法读取属性文件会缓存问题
-//		InputStream in = PropertiesUtils.class
-//				.getResourceAsStream("/config.properties");
 		try {
-			InputStream in =new BufferedInputStream(new FileInputStream(savePath));  
-			prop.load(in);
+			Reader reader = Resources.getResourceAsReader("/config.properties");
+			prop.load(reader);
 		} catch (Exception e) {
 			return null;
 		}
@@ -77,14 +76,9 @@ public class PropertiesUtils {
 
 	public static Properties getjdbcProperties(){
 		Properties prop = new Properties();
-		String savePath = PropertiesUtils.class.getResource("/jdbc.properties").getPath();
-		//以下方法读取属性文件会缓存问题
-//		InputStream in = PropertiesUtils.class
-//				.getResourceAsStream("/config.properties");
 		try {
-			InputStream in =new BufferedInputStream(new FileInputStream(savePath));  
-			prop.load(in);
-			in.close();
+			Reader reader = Resources.getResourceAsReader("/jdbc.properties");
+			prop.load(reader);
 		} catch (Exception e) {
 			return null;
 		}

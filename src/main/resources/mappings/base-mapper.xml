@@ -7,6 +7,11 @@
 		/> -->
 	<!-- <cache type="org.mybatis.caches.ehcache.EhcacheCache"/> -->
 	<!-- 以下与实体类的中字段一致 -->
+	<select id="initTableField" resultType="java.util.HashMap">
+		select TABLE_NAME,group_concat(COLUMN_NAME) COLUMN_NAME 
+		from information_schema.columns 
+		where table_name in (${table_name}) and table_schema in (${database_name})  GROUP BY TABLE_NAME
+	</select>
 	<select id="findByWhere" resultType="java.util.HashMap">
 		select * from table
 		
