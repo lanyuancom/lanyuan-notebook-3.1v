@@ -31,7 +31,7 @@ jQuery.validator.addMethod("same", function(value, element) {
 
 //加入数据校验证
 $(function() {
-	$("#form").validate({
+	$("#formUpdatePwd").validate({
 		submitHandler : function(form) {// 必须写在验证前面，否则无法ajax提交
 			ly.ajaxSubmit(form, {// 验证新增是否成功
 				type : "post",

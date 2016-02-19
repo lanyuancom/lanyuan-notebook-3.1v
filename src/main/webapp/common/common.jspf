@@ -25,7 +25,7 @@ user-scalable - 用户是否可以手动缩放
 <link rel="stylesheet" href="${ctx}/notebook/notebook_files/app.v1.css" type="text/css">
 <link rel="stylesheet" href="${ctx}/css/lanyuan.css" type="text/css">
 	<!-- base start 重要部分不可删改-->
-<script type="text/javascript" src="${ctx}/js/jquery/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="${ctx}/notebook/notebook_files/app.v1.js"></script>
 <script type="text/javascript" src="${ctx}/notebook/notebook_files/app.plugin.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery/jquery.form.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery/jquery-validation/jquery.validate.min.js"></script>
@@ -42,8 +42,8 @@ user-scalable - 用户是否可以手动缩放
 <link rel="stylesheet" type="text/css" media="all" href="${ctx}/js/date/daterangepicker-bs3.css" />
 <script type="text/javascript" src="${ctx}/js/date/bootstrap.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/date/moment.js"></script>
-<script type="text/javascript" src="${ctx}/js/date/daterangepicker.js"></script>
-<script type="text/javascript" src="${ctx}/js/system/user/updatePassword.js"></script> --%>
+<script type="text/javascript" src="${ctx}/js/date/daterangepicker.js"></script>--%>
+<script type="text/javascript" src="${ctx}/js/system/user/updatePassword.js"></script> 
 <style type="text/css">
 .l_err{
     background: none repeat scroll 0 0 #FFFCC7;

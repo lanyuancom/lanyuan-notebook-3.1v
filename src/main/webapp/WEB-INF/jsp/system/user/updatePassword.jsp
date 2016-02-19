@@ -18,7 +18,7 @@
 </head>
 <body>
 	<div class="l_err" style="width: 100%; margin-top: 2px;"></div>
-	<form id="form" name="form" class="form-horizontal" method="post" action="${ctx}/user/editPassword.shtml">
+	<form id="formUpdatePwd" name="form" class="form-horizontal" method="post" action="${ctx}/user/editPassword.shtml">
 		<input type="hidden" class="form-control checkacc" value="${userSession.id}" name="userFormMap.id" id="id">
 		<input type="hidden" class="form-control checkacc" value="${userSession.accountName}" name="userFormMap.accountName" id="accountName">
 		<input type="hidden" class="form-control checkacc" value="${userSession.password}" name="userFormMap.password" id="password">
