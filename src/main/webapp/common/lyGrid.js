@@ -106,7 +106,7 @@
 						json = data;
 					},
 					error : function(msg) {
-//						alert("系统暂无数据！");
+						alert("系统暂无数据！");
 						json = '';
 					}
 				});
@@ -124,7 +124,7 @@
 			var id = conf.pagId;
 			divid = typeof (id) == "string" ? document.getElementById(id) : id;
 			if (divid == "" || divid == undefined || divid == null) {
-				console.error("找不到 id= " + id + " 选择器！");
+				//console.error("找不到 id= " + id + " 选择器！");
 				return;
 			}
 
@@ -301,8 +301,8 @@
 				if(CommnUtil.notNull(rowdata)){
 					var tr = document.createElement('tr');
 					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
-					var sm = parseInt(tee.substring(tee.length-1),10)+1;
-					tee=tee.substring(0,tee.length-2);
+					var sm = parseInt(tee.substring(tee.lastIndexOf("-")+1),10)+1;
+					tee=tee.substring(0,tee.lastIndexOf("-"));
 					tee=tee+"-"+sm;
 					tr.setAttribute("d-tree", tee);
 					tbody.appendChild(tr);
@@ -335,7 +335,7 @@
 						if (!column[o].hide || column[o].hide == undefined) {
 							var td_o = tr.insertCell(-1);
 							td_o.className=column[o].tbodyClass;
-							td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;");
+							td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;word-break: keep-all;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;");
 
 							var clm = column[o].colkey;
 							var data = CommnUtil.notEmpty(_getValueByName(rowdata, clm));
@@ -543,8 +543,8 @@
 					}
 					var tr = document.createElement('tr');
 					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
-					var sm = parseInt(tee.substring(tee.length-1),10)+1;
-					tee=tee.substring(0,tee.length-2);
+					var sm = parseInt(tee.substring(tee.lastIndexOf("-")+1),10)+1;
+					tee=tee.substring(0,tee.lastIndexOf("-"));
 					tee=tee+"-"+sm;
 					tr.setAttribute("d-tree", tee);
 					tbody.appendChild(tr);
@@ -628,7 +628,7 @@
 					}
 
 				});
-				tee=tee.substring(0,tee.length-2);
+				tee=tee.substring(0,tee.lastIndexOf("-"));
 				nb = 20;
 			}
 		};
@@ -644,8 +644,8 @@
 							tte = true;
 							var tr = document.createElement('tr');
 							tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
-							var sm = parseInt(tee.substring(tee.length-1),10)+1;
-							tee=tee.substring(0,tee.length-2);
+							var sm = parseInt(tee.substring(tee.lastIndexOf("-")+1),10)+1;
+							tee=tee.substring(0,tee.lastIndexOf("-"));
 							tee=tee+"-"+sm;
 							tr.setAttribute("d-tree", tee);
 							tbody.appendChild(tr);
@@ -730,7 +730,7 @@
 					if(CommnUtil.notNull(img))
 						img.remove(img.selectedIndex);
 				}
-				tee=tee.substring(0,tee.length-2);
+				tee=tee.substring(0,tee.lastIndexOf("-"));
 				nb = parseInt(nb,10) - 20;;
 		};
 		Array.prototype.ly_each = function(f) { // 数组的遍历
