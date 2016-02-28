@@ -22,7 +22,7 @@ public class TreeUtil {
 		for (Iterator<TreeObject> iterator = list.iterator(); iterator.hasNext();) {
 			TreeObject t = (TreeObject) iterator.next();
 			// 一、根据传入的某个父节点ID,遍历该父节点的所有子节点
-			if (t.getParentId()==praentId) {
+			if (t.getParentId().equals(praentId)) {
 				recursionFn(list, t);
 				returnList.add(t);
 			}
@@ -60,7 +60,7 @@ public class TreeUtil {
 		Iterator<TreeObject> it = list.iterator();
 		while (it.hasNext()) {
 			TreeObject n = (TreeObject) it.next();
-			if (n.getParentId() == t.getId()) {
+			if (n.getParentId().equals(t.getId())) {
 				tlist.add(n);
 			}
 		}
@@ -78,7 +78,7 @@ public class TreeUtil {
         for (Iterator<TreeObject> iterator = list.iterator(); iterator.hasNext();) {
             TreeObject node = (TreeObject) iterator.next();
             // 一、根据传入的某个父节点ID,遍历该父节点的所有子节点
-            if (node.getParentId()==typeId) {
+            if (node.getParentId().equals(typeId)) {
                 recursionFn(list, node,prefix);
             }
             // 二、遍历所有的父节点下的所有子节点
