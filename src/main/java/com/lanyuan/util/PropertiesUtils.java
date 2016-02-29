@@ -1,7 +1,4 @@
  package com.lanyuan.util;
-
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.Reader;
@@ -52,6 +49,7 @@ public class PropertiesUtils {
 				System.err.println((e.getKey().toString() + "" + e.getValue()
 						.toString()));
 			}
+			in.close();
 		} catch (Exception e) {
 			
 		}
@@ -68,6 +66,7 @@ public class PropertiesUtils {
 		try {
 			Reader reader = Resources.getResourceAsReader("/config.properties");
 			prop.load(reader);
+			reader.close();
 		} catch (Exception e) {
 			return null;
 		}
@@ -79,6 +78,7 @@ public class PropertiesUtils {
 		try {
 			Reader reader = Resources.getResourceAsReader("/jdbc.properties");
 			prop.load(reader);
+			reader.close();
 		} catch (Exception e) {
 			return null;
 		}
