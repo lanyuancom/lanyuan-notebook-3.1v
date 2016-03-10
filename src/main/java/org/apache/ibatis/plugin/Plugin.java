@@ -64,8 +64,8 @@ public class Plugin implements InvocationHandler {
 		Class<?> type = target.getClass();
 		Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
 		if (interfaces.length > 0) {
-			return Proxy.newProxyInstance(type.getClassLoader(), interfaces, new Plugin(target,
-					interceptor, signatureMap));
+			return Proxy.newProxyInstance(type.getClassLoader(), interfaces,
+					new Plugin(target, interceptor, signatureMap));
 		}
 		return target;
 	}
@@ -85,8 +85,8 @@ public class Plugin implements InvocationHandler {
 	private static Map<Class<?>, Set<Method>> getSignatureMap(Interceptor interceptor) {
 		Intercepts interceptsAnnotation = interceptor.getClass().getAnnotation(Intercepts.class);
 		if (interceptsAnnotation == null) { // issue #251
-			throw new PluginException("No @Intercepts annotation was found in interceptor "
-					+ interceptor.getClass().getName());
+			throw new PluginException(
+					"No @Intercepts annotation was found in interceptor " + interceptor.getClass().getName());
 		}
 		Signature[] sigs = interceptsAnnotation.value();
 		Map<Class<?>, Set<Method>> signatureMap = new HashMap<Class<?>, Set<Method>>();
@@ -100,15 +100,14 @@ public class Plugin implements InvocationHandler {
 				Method method = sig.type().getMethod(sig.method(), sig.args());
 				methods.add(method);
 			} catch (NoSuchMethodException e) {
-				throw new PluginException("Could not find method on " + sig.type() + " named "
-						+ sig.method() + ". Cause: " + e, e);
+				throw new PluginException(
+						"Could not find method on " + sig.type() + " named " + sig.method() + ". Cause: " + e, e);
 			}
 		}
 		return signatureMap;
 	}
 
-	private static Class<?>[] getAllInterfaces(Class<?> type,
-			Map<Class<?>, Set<Method>> signatureMap) {
+	private static Class<?>[] getAllInterfaces(Class<?> type, Map<Class<?>, Set<Method>> signatureMap) {
 		Set<Class<?>> interfaces = new HashSet<Class<?>>();
 		while (type != null) {
 			for (Class<?> c : type.getInterfaces()) {
@@ -122,23 +121,22 @@ public class Plugin implements InvocationHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static final String joinSql(Connection connection, MappedStatement mappedStatement,
-			BoundSql boundSql, Map<String, Object> formMap, List<Object> formMaps) throws Exception {
+	public static final String joinSql(Connection connection, MappedStatement mappedStatement, BoundSql boundSql,
+			Map<String, Object> formMap, List<Object> formMaps) throws Exception {
 		Object table = null;
 		String sql = "";
-		Map<String, Object> mapfield=null;
+		Map<String, Object> mapfield = null;
 		String field = null;
 		if (null != formMap) {
 			table = formMap.get("ly_table");
-			mapfield=(Map<String, Object>) EhcacheUtils.get(table);
+			mapfield = (Map<String, Object>) EhcacheUtils.get(table);
 			field = mapfield.get("field").toString();
-			sql = " select "+field+" from " + String.valueOf(table);
+			sql = " select " + field + " from " + String.valueOf(table);
 		}
 		String sqlId = mappedStatement.getId();
 		sqlId = sqlId.substring(sqlId.lastIndexOf(".") + 1);
 		if (Configuration.FINDBYWHERE.equals(sqlId)) {
-			if (null != formMap.get("where")
-					&& !StringUtils.isBlank(formMap.get("where").toString())) {
+			if (null != formMap.get("where") && !StringUtils.isBlank(formMap.get("where").toString())) {
 				sql += " " + formMap.get("where").toString();
 			}
 		} else if (Configuration.FINDBYPAGE.equals(sqlId)) {
@@ -147,28 +145,56 @@ public class Plugin implements InvocationHandler {
 			for (String string : fe) {
 				if (formMap.containsKey(string)) {
 					Object v = formMap.get(string);
-					if (v.toString().indexOf("%") > -1) {
+					String sf = v.toString();
+					if (sf.indexOf("%") > -1) {
 						param += " and " + string + " like '" + v + "'";
+					}
+					if (sf.indexOf(",") > -1)// 处理模糊查询
+					{
+
+						StringBuffer sbuffer = new StringBuffer();
+						String[] se = sf.split(",");
+						for (String sst : se) {
+							if (0 >= sbuffer.length()) {
+								sbuffer.append(" and (");
+								sbuffer.append(" " + string + " = '" + sst + "'  ");
+							} else {
+								sbuffer.append(" or " + string + " = '" + sst + "'  ");
+							}
+
+						}
+						sbuffer.append(")");
+						param += sbuffer.toString();
 					} else {
 						param += " and " + string + " = '" + v + "'";
 					}
 				}
 			}
+
+			Object where = formMap.get("where");
+			if (null != where) {
+				String sf = where.toString();
+				if (StringUtils.isNotBlank(sf)) {
+					if (sf.indexOf("null") == -1) {
+						param += sf;
+					}					
+				}
+
+			}
 			if (StringUtils.isNotBlank(param)) {
 				param = param.substring(param.indexOf("and") + 4);
 				sql += " where " + param;
 			}
+
 			Object by = formMap.get("orderby");
 			if (null != by) {
 				sql += " " + by;
 			}
 			Object paging = formMap.get("paging");
 			if (null == paging) {
-				throw new Exception(
-						"调用findByPage接口,必须传入PageView对象! formMap.set(\"paging\", pageView);");
+				throw new Exception("调用findByPage接口,必须传入PageView对象! formMap.set(\"paging\", pageView);");
 			} else if (StringUtils.isBlank(paging.toString())) {
-				throw new Exception(
-						"调用findByPage接口,必须传入PageView对象! formMap.set(\"paging\", pageView);");
+				throw new Exception("调用findByPage接口,必须传入PageView对象! formMap.set(\"paging\", pageView);");
 			}
 			PageView pageView = (PageView) paging;
 			setCount(sql, connection, boundSql, pageView);
@@ -177,8 +203,7 @@ public class Plugin implements InvocationHandler {
 			sql = "delete from " + table.toString() + " where ";
 			String param = "";
 			for (Entry<String, Object> entry : formMap.entrySet()) {
-				if (!"ly_table".equals(entry.getKey()) && null != entry.getValue()
-						&& !"_t".equals(entry.getKey()))
+				if (!"ly_table".equals(entry.getKey()) && null != entry.getValue() && !"_t".equals(entry.getKey()))
 					param += " and " + entry.getKey() + " in (" + entry.getValue() + ")";
 			}
 			if (StringUtils.isNotBlank(param)) {
@@ -234,8 +259,8 @@ public class Plugin implements InvocationHandler {
 					fieldValues += "'" + v + "',";
 				}
 			}
-			sql = "insert into " + table.toString() + " (" + ResolverUtil.trimComma(fieldString)
-					+ ")  values (" + ResolverUtil.trimComma(fieldValues) + ")";
+			sql = "insert into " + table.toString() + " (" + ResolverUtil.trimComma(fieldString) + ")  values ("
+					+ ResolverUtil.trimComma(fieldValues) + ")";
 		} else if (Configuration.EDITENTITY.equals(sqlId)) {
 			String[] fe = field.split(",");
 			String fieldString = "";
@@ -257,17 +282,14 @@ public class Plugin implements InvocationHandler {
 				}
 			}
 
-			sql = "update " + table.toString() + " set " + ResolverUtil.trimComma(fieldString)
-					+ " " + where;
+			sql = "update " + table.toString() + " set " + ResolverUtil.trimComma(fieldString) + " " + where;
 		} else if (Configuration.FINDBYFRIST.equals(sqlId)) {
 			sql = "select * from " + table.toString() + " where " + formMap.get("key");
-			if(null!=formMap.get("value")&&!"".equals(formMap.get("value").toString()))
-			{
-				sql += " = '"+formMap.get("value")+"'";
-			}else{
-				throw new Exception(sqlId+" 调用公共方法异常!,传入参数错误！");
+			if (null != formMap.get("value") && !"".equals(formMap.get("value").toString())) {
+				sql += " = '" + formMap.get("value") + "'";
+			} else {
+				throw new Exception(sqlId + " 调用公共方法异常!,传入参数错误！");
 			}
-			
 
 		} else if (Configuration.BATCHSAVE.equals(sqlId)) {
 			if (null != formMaps && formMaps.size() > 0) {
@@ -297,15 +319,14 @@ public class Plugin implements InvocationHandler {
 					fd = fieldString;
 				}
 				fvs += "(" + ResolverUtil.trimComma(fieldValues) + "),";
-				fs += " insert into " + table.toString() + " ("
-						+ ResolverUtil.trimComma(fieldString) + ")  values ("
+				fs += " insert into " + table.toString() + " (" + ResolverUtil.trimComma(fieldString) + ")  values ("
 						+ ResolverUtil.trimComma(fieldValues) + ");";
 				fieldValues = "";
 				fieldString = "";
 			}
 			String v = ResolverUtil.trimComma(fvs);
-			sql = "insert into " + table.toString() + " (" + ResolverUtil.trimComma(fd)
-					+ ")  values " + ResolverUtil.trimComma(fvs) + "";
+			sql = "insert into " + table.toString() + " (" + ResolverUtil.trimComma(fd) + ")  values "
+					+ ResolverUtil.trimComma(fvs) + "";
 			String[] vs = v.split("\\),");
 			boolean b = false;
 			for (String string : vs) {
@@ -323,19 +344,19 @@ public class Plugin implements InvocationHandler {
 		return sql;
 	}
 
-	public static void setCount(String sql, Connection connection, BoundSql boundSql,
-			PageView pageView) throws SQLException {
+	public static void setCount(String sql, Connection connection, BoundSql boundSql, PageView pageView)
+			throws SQLException {
 		PreparedStatement countStmt = null;
 		ResultSet rs = null;
 		try {
 			String countSql = "";
 			try {
-				 countSql = "select count(1) from " + suffixStr(removeOrderBys(sql));
+				countSql = "select count(1) from " + suffixStr(removeOrderBys(sql));
 				countStmt = connection.prepareStatement(countSql);
 				rs = countStmt.executeQuery();
 			} catch (Exception e) {
-				PagePlugin.logger.error(countSql+" 统计Sql出错,自动转换为普通统计Sql语句!");
-				countSql = "select count(1) from (" + sql+ ") tmp_count"; 
+				PagePlugin.logger.error(countSql + " 统计Sql出错,自动转换为普通统计Sql语句!");
+				countSql = "select count(1) from (" + sql + ") tmp_count";
 				countStmt = connection.prepareStatement(countSql);
 				rs = countStmt.executeQuery();
 			}
@@ -356,59 +377,61 @@ public class Plugin implements InvocationHandler {
 		}
 
 	}
-	public static String suffixStr(String toSql){
+
+	public static String suffixStr(String toSql) {
 		int sun = toSql.indexOf("from");
-		String f1 = toSql.substring(sun-1,sun);
-		String f2 = toSql.substring(sun+4,sun+5);
-		if(f1.trim().isEmpty()&&f2.trim().isEmpty()){
-			String s1 = toSql.substring(0,sun);
-			int s0 =s1.indexOf("(");
-			if(s0>-1){
-				int se1 =s1.indexOf("select");
-				if(s0<se1){
-					if(se1>-1){
-						String ss1 = s1.substring(se1-1,se1);
-						String ss2 = s1.substring(se1+6,se1+7);
-						if(ss1.trim().isEmpty()&&ss2.trim().isEmpty()){
-							return suffixStr(toSql.substring(sun+5));
+		String f1 = toSql.substring(sun - 1, sun);
+		String f2 = toSql.substring(sun + 4, sun + 5);
+		if (f1.trim().isEmpty() && f2.trim().isEmpty()) {
+			String s1 = toSql.substring(0, sun);
+			int s0 = s1.indexOf("(");
+			if (s0 > -1) {
+				int se1 = s1.indexOf("select");
+				if (s0 < se1) {
+					if (se1 > -1) {
+						String ss1 = s1.substring(se1 - 1, se1);
+						String ss2 = s1.substring(se1 + 6, se1 + 7);
+						if (ss1.trim().isEmpty() && ss2.trim().isEmpty()) {
+							return suffixStr(toSql.substring(sun + 5));
 						}
 					}
-				}	
-				int se2 =s1.indexOf("(select");
-					if(se2>-1){
-						String ss2 = s1.substring(se2+7,se2+8);
-						if(ss2.trim().isEmpty()){
-							return suffixStr(toSql.substring(sun+5));
-						}
+				}
+				int se2 = s1.indexOf("(select");
+				if (se2 > -1) {
+					String ss2 = s1.substring(se2 + 7, se2 + 8);
+					if (ss2.trim().isEmpty()) {
+						return suffixStr(toSql.substring(sun + 5));
 					}
-					if(se1==-1&&se2==-1){
-						return toSql.substring(sun+5);
-					}else{
-						toSql=toSql.substring(sun+5);
-					}
-			}else{
-				toSql=toSql.substring(sun+5);
+				}
+				if (se1 == -1 && se2 == -1) {
+					return toSql.substring(sun + 5);
+				} else {
+					toSql = toSql.substring(sun + 5);
+				}
+			} else {
+				toSql = toSql.substring(sun + 5);
 			}
 		}
 		return toSql;
 	}
-  private static String removeOrderBys(String toSql) {  
-	  	int sun = toSql.indexOf("order");
-	  	if(sun>-1){
-	  	  	String f1 = toSql.substring(sun-1,sun);
-	  		String f2 = toSql.substring(sun+5,sun+5);
-	  		if(f1.trim().isEmpty()&&f2.trim().isEmpty()){
-	  		  	String zb = toSql.substring(sun);
-	  		  	int s0 =zb.indexOf(")");
-	  		  	if(s0>-1){
-	  		  		String s1=toSql.substring(0,sun);
-	  		  		String s2 =zb.substring(s0);
-	  		  		return removeOrderBys(s1+s2);
-	  		  	}else{
-	  		  		toSql=toSql.substring(0,sun);
-	  		  	}
-	  		}
-	  	}
+
+	private static String removeOrderBys(String toSql) {
+		int sun = toSql.indexOf("order");
+		if (sun > -1) {
+			String f1 = toSql.substring(sun - 1, sun);
+			String f2 = toSql.substring(sun + 5, sun + 5);
+			if (f1.trim().isEmpty() && f2.trim().isEmpty()) {
+				String zb = toSql.substring(sun);
+				int s0 = zb.indexOf(")");
+				if (s0 > -1) {
+					String s1 = toSql.substring(0, sun);
+					String s2 = zb.substring(s0);
+					return removeOrderBys(s1 + s2);
+				} else {
+					toSql = toSql.substring(0, sun);
+				}
+			}
+		}
 		return toSql;
-  }
+	}
 }
