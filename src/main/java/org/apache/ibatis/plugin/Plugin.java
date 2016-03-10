@@ -148,25 +148,27 @@ public class Plugin implements InvocationHandler {
 					String sf = v.toString();
 					if (sf.indexOf("%") > -1) {
 						param += " and " + string + " like '" + v + "'";
-					}
-					if (sf.indexOf(",") > -1)// 处理模糊查询
-					{
-
-						StringBuffer sbuffer = new StringBuffer();
-						String[] se = sf.split(",");
-						for (String sst : se) {
-							if (0 >= sbuffer.length()) {
-								sbuffer.append(" and (");
-								sbuffer.append(" " + string + " = '" + sst + "'  ");
-							} else {
-								sbuffer.append(" or " + string + " = '" + sst + "'  ");
-							}
-
-						}
-						sbuffer.append(")");
-						param += sbuffer.toString();
 					} else {
-						param += " and " + string + " = '" + v + "'";
+						if (sf.indexOf(",") > -1)// 处理模糊查询
+						{
+
+							StringBuffer sbuffer = new StringBuffer();
+							String[] se = sf.split(",");
+							for (String sst : se) {
+								if (0 >= sbuffer.length()) {
+									sbuffer.append(" and (");
+									sbuffer.append(" " + string + " = '" + sst + "'  ");
+								} else {
+									sbuffer.append(" or " + string + " = '" + sst + "'  ");
+								}
+
+							}
+							sbuffer.append(")");
+							param += sbuffer.toString();
+						} else {
+							param += " and " + string + " = '" + v + "'";
+						}
+
 					}
 				}
 			}
@@ -177,7 +179,7 @@ public class Plugin implements InvocationHandler {
 				if (StringUtils.isNotBlank(sf)) {
 					if (sf.indexOf("null") == -1) {
 						param += sf;
-					}					
+					}
 				}
 
 			}
