@@ -35,6 +35,7 @@
 			treeGrid : {
 				type: 1, //1 表示后台已经处理好父类带children集合 2 表示没有处理,由前端处理树形式
 				tree : false,// 是否显示树
+				hide : false,//默认展开
 				name : 'name',// 以哪个字段 的树形式 如果是多个 name,key
 				id: "id",
 				pid: "pid"
@@ -53,12 +54,6 @@
 			isSort:false,
 			renderData : null
 		// 渲染数据function( rowindex ,data, rowdata, colkey)
-		};
-		var l_treeGrid = {
-			tree : false,// 是否显示树
-			name : 'name',// 以哪个字段 的树形式
-			id: "id",
-			pid: "pid"
 		};
 		var conf = $.extend(confs, params);
 		var l_tree = conf.treeGrid;
@@ -347,7 +342,10 @@
 									divtree.className = "ly_tree";
 									divtree.setAttribute("style", "padding-top:5px;margin-left:5px;text-align:" + column[o].align + ";");
 									var img = document.createElement('img');
-									img.src=rootPath+"/images/tree/nolines_minus.gif";
+									if(l_tree.hide||l_tree.hide!=undefined)
+										img.src=rootPath+"/images/tree/nolines_plus.gif";
+									else
+										img.src=rootPath+"/images/tree/nolines_minus.gif";
 									img.onclick=datatree.bind();
 									divtree.appendChild(img);
 									td_o.appendChild(divtree);
@@ -542,7 +540,9 @@
 						tte=true;
 					}
 					var tr = document.createElement('tr');
-					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";display: none;");
+					if(l_tree.hide||l_tree.hide!=undefined)
+						di = 'display: none;';
+					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";"+di);
 					var sm = parseInt(tee.substring(tee.lastIndexOf("-")+1),10)+1;
 					tee=tee.substring(0,tee.lastIndexOf("-"));
 					tee=tee+"-"+sm;
@@ -643,7 +643,9 @@
 						if(jsb==ob){
 							tte = true;
 							var tr = document.createElement('tr');
-							tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";display: none");
+							if(l_tree.hide||l_tree.hide!=undefined)
+								di = 'display: none;';
+							tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";"+di);
 							var sm = parseInt(tee.substring(tee.lastIndexOf("-")+1),10)+1;
 							tee=tee.substring(0,tee.lastIndexOf("-"));
 							tee=tee+"-"+sm;
