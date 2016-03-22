@@ -542,7 +542,7 @@
 						tte=true;
 					}
 					var tr = document.createElement('tr');
-					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
+					tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";display: none;");
 					var sm = parseInt(tee.substring(tee.lastIndexOf("-")+1),10)+1;
 					tee=tee.substring(0,tee.lastIndexOf("-"));
 					tee=tee+"-"+sm;
@@ -643,7 +643,7 @@
 						if(jsb==ob){
 							tte = true;
 							var tr = document.createElement('tr');
-							tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
+							tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";display: none");
 							var sm = parseInt(tee.substring(tee.lastIndexOf("-")+1),10)+1;
 							tee=tee.substring(0,tee.lastIndexOf("-"));
 							tee=tee+"-"+sm;
