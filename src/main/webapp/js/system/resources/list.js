@@ -43,6 +43,7 @@ $(function() {
 		treeGrid : {
 			type:1,
 			tree : true,
+			hide:false,
 			name : 'name',
 			id: "id",
 			pid: "parentId"
