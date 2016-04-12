@@ -94,5 +94,5 @@
 	<!-- 使用Spring组件扫描的方式来实现自动注入bean -->
 	<context:component-scan base-package="com.lanyuan.task" />
 	<!-- 隐式地向 Spring 容器注册 -->
-	<context:annotation-config />
+	<!-- <context:annotation-config /> -->
 </beans>
