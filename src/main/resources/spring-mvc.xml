@@ -14,7 +14,6 @@
     http://www.springframework.org/schema/aop 
      http://www.springframework.org/schema/aop/spring-aop-4.1.xsd"
 	default-lazy-init="true">
-	<tx:annotation-driven />
 	<context:component-scan base-package="com.lanyuan.controller" />
 	<context:component-scan base-package="com.lanyuan.logAop" />
 	<!-- 启动对@AspectJ注解的支持 -->

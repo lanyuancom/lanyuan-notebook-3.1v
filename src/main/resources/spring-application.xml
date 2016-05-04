@@ -19,7 +19,7 @@
 	<task:annotation-driven />
 	<!-- 标注类型 的事务配置 如果使用注解事务。就放开
 	<tx:annotation-driven />-->
-	
+	<tx:annotation-driven />
 	<!-- 统一异常处理方式 -->
 	<bean id="exceptionHandler" class="com.lanyuan.exception.MyExceptionHandler"/>
 	<!-- 初始化数据 -->
