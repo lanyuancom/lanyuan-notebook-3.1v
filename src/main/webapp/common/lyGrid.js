@@ -1043,6 +1043,7 @@
 				params.data=data;
 			}
 			$.extend(conf, params);
+			conf.data.pageNow=1;
 			replayData();
 		};
 		/**
