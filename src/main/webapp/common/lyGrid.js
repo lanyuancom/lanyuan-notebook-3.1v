@@ -8,7 +8,7 @@
  */
 ;
 (function() {
-	lyGrid = (function(params) {
+	lyGrid = (function(params,callback) {
 		var confs = {
 			l_column : [],
 			pagId : 'paging', // 加载表格存放位置的ID
@@ -72,6 +72,8 @@
 		var init = function() {
 			createHtml();
 			//fixhead();
+			if(callback)
+				callback(column,currentData);//回调函数 column 字段名,当前界面的数据 currentData
 		};
 		var extend = function(o, n, override) {
 			for ( var p in n)

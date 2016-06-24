@@ -49,6 +49,10 @@ $(function() {
 			data : searchParams
 		});
 	});
+	
+	$("#callback_test").click("click", function() {
+		paging_callback();
+	});
 	$("#addAccount").click("click", function() {
 		addAccount();
 	});
@@ -62,6 +66,64 @@ $(function() {
 		permissions();
 	});
 });
+function paging_callback(){
+	var parm = {
+			pagId : 'paging_callback',
+			l_column : [ {
+				colkey : "id",
+				name : "id",
+			}, {
+				colkey : "userName",
+				name : "用户名",
+				isSort:true,
+			}, {
+				colkey : "accountName",
+				name : "账号",
+				isSort:true,
+			}, {
+				colkey : "roleName",
+				name : "所属角色"
+			}, {
+				colkey : "locked",
+				name : "账号状态",
+				width : '90px',
+				isSort:true
+			}, {
+				colkey : "description",
+				name : "描述"
+			}, {
+				colkey : "createTime",
+				name : "时间",
+				isSort:true,
+				renderData : function(rowindex,data, rowdata, column) {
+					return new Date(data).format("yyyy-MM-dd hh:mm:ss");
+				}
+			}, {
+				name : "操作",
+				renderData : function( rowindex ,data, rowdata, colkeyn) {
+					return "测试渲染函数";
+				}
+			} ],
+			jsonUrl : rootPath + '/user/findByPage.shtml',
+			checkbox : true,
+			serNumber : true
+	}
+	
+	var grid_c=lyGrid(parm,function(c,d){
+		//回调方法
+		pageii = layer.open({
+			title : "回调方法生成表格", 
+			type : 1,
+			area : [ "800px", "400px" ],
+			content : $("#callback_div"),btn: ['确认', '取消']
+		  	,yes: function(sum, layero){ //或者使用btn1
+		  		layer.close(index);
+			 },cancel: function(index){ //或者使用btn2
+				 layer.close(index);
+			 }
+		});
+	});
+}
 function editAccount() {
 	var cbox = grid.getSelectedCheckbox();
 	if (cbox.length > 1 || cbox == "") {
