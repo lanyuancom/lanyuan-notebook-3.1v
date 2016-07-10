@@ -242,6 +242,6 @@
 			<a href="javascript:void(0)" class="btn btn-default" id="search">查询</a>
 		</form>
 	</div>
-	<div class="table-responsive">
+	<div class="table-responsive" style="width: 1100px">
 		<div id="paging" class="pagclass"></div>
 	</div>
