@@ -27,14 +27,14 @@
 				<div class="form-group">
 					<label class="col-sm-3 control-label">新密码</label>
 					<div class="col-sm-9">
-						<input type="text" class="form-control" placeholder="请输入新密码" name="userFormMap.newpassword" id="newpassword" >
+						<input  type="password" class="form-control" placeholder="请输入新密码" name="userFormMap.newpassword" id="newpassword" >
 					</div>
 				</div>
 				<div class="line line-dashed line-lg pull-in"></div>
 				<div class="form-group">
 					<label class="col-sm-3 control-label">确认密码</label>
 					<div class="col-sm-9">
-						<input type="text" class="form-control" placeholder="请输入确认密码" name="userFormMap.confirmpassword" id="confirmpassword" >
+						<input  type="password" class="form-control" placeholder="请输入确认密码" name="userFormMap.confirmpassword" id="confirmpassword" >
 					</div>
 				</div>
 			</div>
