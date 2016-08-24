@@ -114,7 +114,7 @@
 				</tr>
 				<tr>
 					<td>QQ交流群:</td>
-					<td style="font-size: 17px; color: blue;">90993106 (加群请说明来意!)</td>
+					<td style="font-size: 17px; color: blue;">[官] ①90993106(满) [官] ②96511102(满) [官] ③464063178　[官]　④387039123 (加群请说明官网账号!)</td>
 				</tr>
 			</table>
 		</div>
