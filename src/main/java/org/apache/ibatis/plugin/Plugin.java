@@ -256,7 +256,7 @@ public class Plugin implements InvocationHandler {
 			String fieldValues = "";
 			for (String string : fe) {
 				Object v = formMap.get(string);
-				if (null != v && !StringUtils.isBlank(v.toString())) {
+				if (null != v) {
 					fieldString += string + ",";
 					fieldValues += "'" + v + "',";
 				}
@@ -269,7 +269,7 @@ public class Plugin implements InvocationHandler {
 			String where = "";
 			for (String string : fe) {
 				Object v = formMap.get(string);
-				if (null != v && !StringUtils.isBlank(v.toString())) {
+				if (null != v) {
 					String key = mapfield.get(Configuration.COLUMN_KEY).toString();
 					if (!StringUtils.isBlank(key)) {
 						if (key.equals(string)) {
@@ -307,12 +307,11 @@ public class Plugin implements InvocationHandler {
 			String fvs = "";
 			for (int i = 0; i < formMaps.size(); i++) {
 				Object object = formMaps.get(i);
-				@SuppressWarnings("unchecked")
 				Map<String, Object> froMmap = (Map<String, Object>) object;
 				String[] fe = field.split(",");
 				for (String string : fe) {
 					Object v = froMmap.get(string);
-					if (null != v && !StringUtils.isBlank(v.toString())) {
+					if (null != v) {
 						fieldString += string + ",";
 						fieldValues += "'" + v + "',";
 					}
