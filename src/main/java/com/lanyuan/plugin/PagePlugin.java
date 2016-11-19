@@ -7,11 +7,14 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.bind.PropertyException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.executor.statement.BaseStatementHandler;
 import org.apache.ibatis.executor.statement.RoutingStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -25,6 +28,7 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.log4j.Logger;
 
 import com.lanyuan.annotation.TableSeg;
+import com.lanyuan.util.Common;
 import com.lanyuan.util.FormMap;
 
 /**
@@ -143,14 +147,17 @@ public class PagePlugin implements Interceptor {
 		try {
 			String countSql = "";
 			try {
-				 countSql = "select count(1) from " + suffixStr(removeOrderBys(sql));
-				countStmt = connection.prepareStatement(countSql);
-				rs = countStmt.executeQuery();
+				 countSql = "select count(1) " +removeOrderBys(suffixStr(sql));
+				 countStmt = connection.prepareStatement(countSql);
+		            BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(),countSql.toString(),boundSql.getParameterMappings(),boundSql.getParameterObject());    
+		            Plugin.setParameters(countStmt,mappedStatement,countBS,boundSql.getParameterObject());    
+					rs = countStmt.executeQuery();
 			} catch (Exception e) {
-				PagePlugin.logger.error(countSql+" 统计Sql出错,自动转换为普通统计Sql语句!");
+				PagePlugin.logger.info(countSql+" 统计Sql出错,自动转换为普通统计Sql语句!");
 				countSql = "select count(1) from (" + sql+ ") tmp_count"; 
-				countStmt = connection.prepareStatement(countSql);
-				rs = countStmt.executeQuery();
+				  BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(),countSql.toString(),boundSql.getParameterMappings(),boundSql.getParameterObject());    
+				  Plugin.setParameters(countStmt,mappedStatement,countBS,boundSql.getParameterObject());    
+					rs = countStmt.executeQuery();
 			}
 			int count = 0;
 			if (rs.next()) {
@@ -169,55 +176,28 @@ public class PagePlugin implements Interceptor {
 		}
 
     }
-	/**
-	   *   select
-	     *  id,
-		 * 	articleNo,
-		 * sum(ddd) ss,
-		 * 	articleName,
-	     *  (SELECT loginName from ly_userinfo u where u.id=userId) loginName,
-		 * 	(SELECT userName from ly_userinfo u where u.id=userId) userName,
-		 * sum(ddd) ss
-		 * from article	
-		 * 兼容以上子查询
-		 * //去除sql ..from 前面的字符。考虑 aafrom fromdd 等等情况
-	   */
-	public static String suffixStr(String toSql){
-		toSql=toSql.toUpperCase();
-		int sun = toSql.indexOf("from");
-		String f1 = toSql.substring(sun-1,sun);
-		String f2 = toSql.substring(sun+4,sun+5);
-		if(f1.trim().isEmpty()&&f2.trim().isEmpty()){//判断第一个from的前后是否为空
-			String s1 = toSql.substring(0,sun);
-			int s0 =s1.indexOf("(");
-			if(s0>-1){
-				int se1 =s1.indexOf("select");
-				if(s0<se1){
-					if(se1>-1){
-						String ss1 = s1.substring(se1-1,se1);
-						String ss2 = s1.substring(se1+6,se1+7);
-						if(ss1.trim().isEmpty()&&ss2.trim().isEmpty()){//判断第一个from的前后是否为空
-							return suffixStr(toSql.substring(sun+5));
-						}
-					}
-				}	
-				int se2 =s1.indexOf("(select");
-					if(se2>-1){
-						String ss2 = s1.substring(se2+7,se2+8);
-						if(ss2.trim().isEmpty()){//判断第一个from的前后是否为空
-							return suffixStr(toSql.substring(sun+5));
-						}
-					}
-					if(se1==-1&&se2==-1){
-						return toSql.substring(sun+5);
-					}else{
-						toSql=toSql.substring(sun+5);
-					}
-			}else{
-				toSql=toSql.substring(sun+5);
-			}
+    /**
+	 * select id, articleNofrom, sum(ddd) ss, articleName, ( SELECT loginName,sum(ddd) from
+	 * oss_userinfo u where u.id=userId order by id) loginName, (SELECT userName from
+	 * oss_userinfo u where u.id=userId and fromaa =  (SELECT userName from
+	 * oss_userinfo u where u.id=userId) fromuserName, sum(ddd) ss from article,(select xxx)  where = (SELECT userName from
+	 * oss_userinfo u where u.id=userId order by id desc) order by id desc 
+	 * 兼容以上子查询 //去除sql ..from 前面的字符。考虑 aafrom fromdd 等等情况
+	 */
+	public static String suffixStr(String toSql) {
+		toSql =getStringNoBlank(toSql);
+		if(StringUtils.isBlank(source_sql))
+		source_sql = toSql;
+		toSql=toSql.toLowerCase();
+		int sun = toSql.indexOf(" from ");
+		String s1 = toSql.substring(0, sun);
+		if (s1.indexOf("( select ") > -1|| s1.indexOf("(select ") > -1) {
+			return suffixStr(toSql.substring(sun+5));
+		}else{
+			toSql = toSql.substring(sun);
+			source_sql=source_sql.substring(source_sql.length()-toSql.length());
 		}
-		return toSql;
+		return source_sql;
 	}
 	public static void main(String[] args) {
 		String sql="  select "+
@@ -234,26 +214,41 @@ public class PagePlugin implements Interceptor {
    * @return String
    *
    */  
-  private static String removeOrderBys(String toSql) {  
-	  	toSql=toSql.toUpperCase();
-	  	int sun = toSql.indexOf("order");
-	  	if(sun>-1){
-	  	  	String f1 = toSql.substring(sun-1,sun);
-	  		String f2 = toSql.substring(sun+5,sun+5);
-	  		if(f1.trim().isEmpty()&&f2.trim().isEmpty()){//判断第一个from的前后是否为空
-	  		  	String zb = toSql.substring(sun);
-	  		  	int s0 =zb.indexOf(")");
-	  		  	if(s0>-1){//from之前是否有括号
-	  		  		String s1=toSql.substring(0,sun);
-	  		  		String s2 =zb.substring(s0);
-	  		  		return removeOrderBys(s1+s2);
-	  		  	}else{
-	  		  		toSql=toSql.substring(0,sun);
-	  		  	}
-	  		}
-	  	}
-		return toSql;
-  }
+	static String str_sql = "";
+	static String source_sql = "";
+	private static String removeOrderBys(String sql) {
+		sql =getStringNoBlank(sql);
+		int s = 0;
+		int e = 0;
+		source_sql = sql;
+		sql=sql.toLowerCase();
+		int sun = sql.lastIndexOf(" order ");
+		if (sun > -1) {
+			String f = sql.substring(sun);
+			if(f.lastIndexOf(")")==-1)
+			{
+				int a = sql.lastIndexOf(" asc");
+				if(a>-1){
+					String as = sql.substring(a,a+1);
+					if (as.trim().isEmpty()) 
+						s=sql.lastIndexOf(" order ");
+						e=a+4;
+				}
+				int d = sql.lastIndexOf(" desc");
+				if(d>-1){
+					String ds = sql.substring(d,d+1);
+					if (ds.trim().isEmpty()) 
+						s=sql.lastIndexOf(" order ");
+						e=d+5;
+				}
+				String ss=source_sql.substring(0,s);
+				String ee=source_sql.substring(e);
+				source_sql = ss+ee;
+			}
+				
+		}
+		return source_sql;
+	}
 	
     /**
 	 * 根据数据库方言，生成特定的分页sql
@@ -375,4 +370,17 @@ public class PagePlugin implements Interceptor {
 		}
 		return froMmap;
 	}
+	public static String getStringNoBlank(String str) {      
+        if(str!=null && !"".equals(str)) {      
+            Pattern p = Pattern.compile("\t|\r|\n");      
+            Matcher m = p.matcher(str);      
+            String strNoBlank = m.replaceAll(" ");
+            p = Pattern.compile("\\s+");      
+            m = p.matcher(str);      
+            strNoBlank = m.replaceAll(" ");
+            return strNoBlank;      
+        }else {      
+            return str;      
+        }           
+    }
 }

@@ -32,11 +32,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.executor.ErrorContext;
+import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.io.ResolverUtil;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.ParameterMapping;
+import org.apache.ibatis.mapping.ParameterMode;
 import org.apache.ibatis.reflection.ExceptionUtil;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.property.PropertyTokenizer;
+import org.apache.ibatis.scripting.xmltags.ForEachSqlNode;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.type.TypeHandler;
+import org.apache.ibatis.type.TypeHandlerRegistry;
 
 import com.lanyuan.plugin.PagePlugin;
 import com.lanyuan.plugin.PageView;
@@ -198,7 +207,7 @@ public class Plugin implements InvocationHandler {
 				throw new Exception("调用findByPage接口,必须传入PageView对象! formMap.set(\"paging\", pageView);");
 			}
 			PageView pageView = (PageView) paging;
-			setCount(sql, connection, boundSql, pageView);
+			setPageParameter(sql, connection,mappedStatement, boundSql, pageView);
 			sql = PagePlugin.generatePagesSql(sql, pageView);
 		} else if (Configuration.DELETEBYNAMES.equals(sqlId)) {
 			sql = "delete from " + table.toString() + " where ";
@@ -344,21 +353,36 @@ public class Plugin implements InvocationHandler {
 		return sql;
 	}
 
-	public static void setCount(String sql, Connection connection, BoundSql boundSql, PageView pageView)
-			throws SQLException {
-		PreparedStatement countStmt = null;
+	/**
+     * 从数据库里查询总的记录数并计算总页数，回写进分页参数<code>PageParameter</code>,这样调用者就可用通过 分页参数
+     * <code>PageParameter</code>获得相关信息。
+     * 
+     * @param sql
+     * @param connection
+     * @param mappedStatement
+     * @param boundSql
+     * @param page
+	 * @throws SQLException 
+     */
+    private static void setPageParameter(String sql, Connection connection, MappedStatement mappedStatement,
+            BoundSql boundSql, PageView pageView) throws SQLException {
+        // 记录总记录数
+    	PreparedStatement countStmt = null;
 		ResultSet rs = null;
 		try {
 			String countSql = "";
 			try {
-				countSql = "select count(1) " + suffixStr(removeOrderBys(sql));
-				countStmt = connection.prepareStatement(countSql);
-				rs = countStmt.executeQuery();
+				 countSql = "select count(1) " +removeOrderBys(suffixStr(sql));
+				 countStmt = connection.prepareStatement(countSql);
+		            BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(),countSql.toString(),boundSql.getParameterMappings(),boundSql.getParameterObject());    
+		            setParameters(countStmt,mappedStatement,countBS,boundSql.getParameterObject());    
+					rs = countStmt.executeQuery();
 			} catch (Exception e) {
-				PagePlugin.logger.info(countSql + " 统计Sql出错,自动转换为普通统计Sql语句!");
-				countSql = "select count(1) from (" + sql + ") tmp_count";
-				countStmt = connection.prepareStatement(countSql);
-				rs = countStmt.executeQuery();
+				PagePlugin.logger.info(countSql+" 统计Sql出错,自动转换为普通统计Sql语句!");
+				countSql = "select count(1) from (" + sql+ ") tmp_count"; 
+				  BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(),countSql.toString(),boundSql.getParameterMappings(),boundSql.getParameterObject());    
+		            setParameters(countStmt,mappedStatement,countBS,boundSql.getParameterObject());    
+					rs = countStmt.executeQuery();
 			}
 			int count = 0;
 			if (rs.next()) {
@@ -376,7 +400,7 @@ public class Plugin implements InvocationHandler {
 			}
 		}
 
-	}
+    }
 
 	/**
 	 * select id, articleNofrom, sum(ddd) ss, articleName, ( SELECT loginName,sum(ddd) from
@@ -468,4 +492,49 @@ public class Plugin implements InvocationHandler {
             return str;      
         }           
     }
+	/**  
+     * 对SQL参数(?)设值,参考org.apache.ibatis.executor.parameter.DefaultParameterHandler  
+     * @param ps  
+     * @param mappedStatement  
+     * @param boundSql  
+     * @param parameterObject  
+     * @throws SQLException  
+     */    
+    @SuppressWarnings("rawtypes")
+    public static void setParameters(PreparedStatement ps,MappedStatement mappedStatement,BoundSql boundSql,Object parameterObject) throws SQLException {    
+        ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());    
+        List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();    
+        if (parameterMappings != null) {    
+            Configuration configuration = mappedStatement.getConfiguration();    
+            TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();    
+            MetaObject metaObject = parameterObject == null ? null: configuration.newMetaObject(parameterObject);    
+            for (int i = 0; i < parameterMappings.size(); i++) {    
+                ParameterMapping parameterMapping = parameterMappings.get(i);    
+                if (parameterMapping.getMode() != ParameterMode.OUT) {    
+                    Object value;    
+                    String propertyName = parameterMapping.getProperty();    
+                    PropertyTokenizer prop = new PropertyTokenizer(propertyName);    
+                    if (parameterObject == null) {    
+                        value = null;    
+                    } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {    
+                        value = parameterObject;    
+                    } else if (boundSql.hasAdditionalParameter(propertyName)) {    
+                        value = boundSql.getAdditionalParameter(propertyName);    
+                    } else if (propertyName.startsWith(ForEachSqlNode.ITEM_PREFIX)&& boundSql.hasAdditionalParameter(prop.getName())) {    
+                        value = boundSql.getAdditionalParameter(prop.getName());    
+                        if (value != null) {    
+                            value = configuration.newMetaObject(value).getValue(propertyName.substring(prop.getName().length()));    
+                        }    
+                    } else {    
+                        value = metaObject == null ? null : metaObject.getValue(propertyName);    
+                    }    
+                    TypeHandler typeHandler = parameterMapping.getTypeHandler();    
+                    if (typeHandler == null) {    
+                        throw new ExecutorException("There was no TypeHandler found for parameter "+ propertyName + " of statement "+ mappedStatement.getId());    
+                    }    
+                    typeHandler.setParameter(ps, i + 1, value, parameterMapping.getJdbcType());    
+                }    
+            }    
+        }    
+    } 
 }
