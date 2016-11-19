@@ -22,20 +22,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.io.ResolverUtil;
-import org.apache.ibatis.jdbc.SqlRunner;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.Configuration;
 
@@ -352,11 +351,11 @@ public class Plugin implements InvocationHandler {
 		try {
 			String countSql = "";
 			try {
-				countSql = "select count(1) from " + suffixStr(removeOrderBys(sql));
+				countSql = "select count(1) " + suffixStr(removeOrderBys(sql));
 				countStmt = connection.prepareStatement(countSql);
 				rs = countStmt.executeQuery();
 			} catch (Exception e) {
-				PagePlugin.logger.error(countSql + " 统计Sql出错,自动转换为普通统计Sql语句!");
+				PagePlugin.logger.info(countSql + " 统计Sql出错,自动转换为普通统计Sql语句!");
 				countSql = "select count(1) from (" + sql + ") tmp_count";
 				countStmt = connection.prepareStatement(countSql);
 				rs = countStmt.executeQuery();
@@ -379,60 +378,94 @@ public class Plugin implements InvocationHandler {
 
 	}
 
+	/**
+	 * select id, articleNofrom, sum(ddd) ss, articleName, ( SELECT loginName,sum(ddd) from
+	 * oss_userinfo u where u.id=userId order by id) loginName, (SELECT userName from
+	 * oss_userinfo u where u.id=userId and fromaa =  (SELECT userName from
+	 * oss_userinfo u where u.id=userId) fromuserName, sum(ddd) ss from article,(select xxx)  where = (SELECT userName from
+	 * oss_userinfo u where u.id=userId order by id desc) order by id desc 
+	 * 兼容以上子查询 //去除sql ..from 前面的字符。考虑 aafrom fromdd 等等情况
+	 */
 	public static String suffixStr(String toSql) {
-		int sun = toSql.indexOf("from");
-		String f1 = toSql.substring(sun - 1, sun);
-		String f2 = toSql.substring(sun + 4, sun + 5);
-		if (f1.trim().isEmpty() && f2.trim().isEmpty()) {
-			String s1 = toSql.substring(0, sun);
-			int s0 = s1.indexOf("(");
-			if (s0 > -1) {
-				int se1 = s1.indexOf("select");
-				if (s0 < se1) {
-					if (se1 > -1) {
-						String ss1 = s1.substring(se1 - 1, se1);
-						String ss2 = s1.substring(se1 + 6, se1 + 7);
-						if (ss1.trim().isEmpty() && ss2.trim().isEmpty()) {
-							return suffixStr(toSql.substring(sun + 5));
-						}
-					}
-				}
-				int se2 = s1.indexOf("(select");
-				if (se2 > -1) {
-					String ss2 = s1.substring(se2 + 7, se2 + 8);
-					if (ss2.trim().isEmpty()) {
-						return suffixStr(toSql.substring(sun + 5));
-					}
-				}
-				if (se1 == -1 && se2 == -1) {
-					return toSql.substring(sun + 5);
-				} else {
-					toSql = toSql.substring(sun + 5);
-				}
-			} else {
-				toSql = toSql.substring(sun + 5);
-			}
+		toSql =getStringNoBlank(toSql);
+		if(StringUtils.isBlank(source_sql))
+		source_sql = toSql;
+		toSql=toSql.toLowerCase();
+		int sun = toSql.indexOf(" from ");
+		String s1 = toSql.substring(0, sun);
+		if (s1.indexOf("( select ") > -1|| s1.indexOf("(select ") > -1) {
+			return suffixStr(toSql.substring(sun+5));
+		}else{
+			toSql = toSql.substring(sun);
+			source_sql=source_sql.substring(source_sql.length()-toSql.length());
 		}
-		return toSql;
+		return source_sql;
 	}
 
-	private static String removeOrderBys(String toSql) {
-		int sun = toSql.indexOf("order");
+	public static void main(String[] args) throws Exception {  
+		 String sql = ""
+		 		+ " select id, articleNoorder by id desc, sum(ddd) ss, articleName, ( SELECT loginName,sum(ddd) from"
+		 		+ "  oss_userinfo u where u.id=userId) loginName, (SELECT userName from"
+	 + "  oss_userinfo u where u.id=userId and order by id descaa =  (SELECT userName from"
+	 + " oss_userinfo u where u.id=userId  order by id asc) userNameorder by id desc, sum(ddd) ss from article,(select xxx)  where = (SELECT userName from"
+	 + " oss_userinfo u where u.id=userId order By id desc) order by   f1   group by xx";
+		 System.err.println(removeOrderBys(suffixStr(sql)));
+		
+  
+    }  
+	/**
+	 * 去除Sql的最后一个order By。
+	 * 
+	 * @param toSql
+	 * @return String
+	 * 
+	 */
+	static String str_sql = "";
+	static String source_sql = "";
+	private static String removeOrderBys(String sql) {
+		sql =getStringNoBlank(sql);
+		int s = 0;
+		int e = 0;
+		source_sql = sql;
+		sql=sql.toLowerCase();
+		int sun = sql.lastIndexOf(" order ");
 		if (sun > -1) {
-			String f1 = toSql.substring(sun - 1, sun);
-			String f2 = toSql.substring(sun + 5, sun + 5);
-			if (f1.trim().isEmpty() && f2.trim().isEmpty()) {
-				String zb = toSql.substring(sun);
-				int s0 = zb.indexOf(")");
-				if (s0 > -1) {
-					String s1 = toSql.substring(0, sun);
-					String s2 = zb.substring(s0);
-					return removeOrderBys(s1 + s2);
-				} else {
-					toSql = toSql.substring(0, sun);
+			String f = sql.substring(sun);
+			if(f.lastIndexOf(")")==-1)
+			{
+				int a = sql.lastIndexOf(" asc");
+				if(a>-1){
+					String as = sql.substring(a,a+1);
+					if (as.trim().isEmpty()) 
+						s=sql.lastIndexOf(" order ");
+						e=a+4;
 				}
+				int d = sql.lastIndexOf(" desc");
+				if(d>-1){
+					String ds = sql.substring(d,d+1);
+					if (ds.trim().isEmpty()) 
+						s=sql.lastIndexOf(" order ");
+						e=d+5;
+				}
+				String ss=source_sql.substring(0,s);
+				String ee=source_sql.substring(e);
+				source_sql = ss+ee;
 			}
+				
 		}
-		return toSql;
+		return source_sql;
 	}
+	public static String getStringNoBlank(String str) {      
+        if(str!=null && !"".equals(str)) {      
+            Pattern p = Pattern.compile("\t|\r|\n");      
+            Matcher m = p.matcher(str);      
+            String strNoBlank = m.replaceAll(" ");
+            p = Pattern.compile("\\s+");      
+            m = p.matcher(str);      
+            strNoBlank = m.replaceAll(" ");
+            return strNoBlank;      
+        }else {      
+            return str;      
+        }           
+    }
 }
