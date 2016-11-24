@@ -69,6 +69,40 @@ user-scalable - 用户是否可以手动缩放
 .hidden-xs{
 	display: inherit;
 }
+.dmycol-menu{
+	position: absolute;
+	background-color: white;
+	font-size: 14px;
+    text-align: left;
+    list-style: none;
+    border: 1px solid rgba(0,0,0,.15);
+    z-index: 1000;
+    margin-top: 8px;
+    width: 120px;
+    left: auto;
+    right: 0;
+}
+.dmycol-menu >li{
+    margin-left: -30px; 
+}
+.span_checkbox{
+	display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    background: url(${ctx}/images/custom.png) no-repeat;
+    border: none;
+    cursor: pointer;
+    top: -2px;
+}
+.span_checkbox.checked {
+    background-position: -20px 0;
+}
+.span_checkbox {
+    background-position: 0 0;
+}
 </style>
 <!-- base end -->
 <script type="text/javascript">

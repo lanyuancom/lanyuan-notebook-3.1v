@@ -190,7 +190,7 @@
 			chkbox.onclick = checkboxbind.bind();
 			cth.appendChild(chkbox); // 第一列添加复选框
 			tr.appendChild(cth);
-			$.each(column, function(o) {
+			$.each(column, function(i,o) {
 				if (!column[o].hide || column[o].hide == undefined) {
 					var th = document.createElement('th');
 					th.className=column[o].theadClass;
@@ -258,7 +258,6 @@
 				cth.appendChild(chkbox); // 第一列添加复选框
 				tr.appendChild(cth);
 				$.each(column, function(o) {
-					if (!column[o].hide || column[o].hide == undefined) {
 						var th = document.createElement('th');
 						th.className=column[o].theadClass;
 						var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;";
@@ -269,10 +268,18 @@
 						}else{
 							th.innerHTML = column[o].name;
 						}
+						
+						if (column[o].hide==true)
+							at+="display:"+(column[o].hide ? 'none':'block');
 						th.setAttribute("style", at);
+						
 						tr.appendChild(th);
-					}
 				});
+				var ico = document.createElement("i");// 1.创建一个i表
+				ico.className = "fa fa-thumb-tack";
+				ico.setAttribute("style", "float: right;margin-top: 3px;");
+				ico.onclick = dmycol.bind();
+				tr.lastChild.appendChild(ico);
 			}
 
 		};
@@ -329,10 +336,9 @@
 					chkbox.onclick = highlight.bind(this);
 					td_d.appendChild(chkbox); // 第一列添加复选框
 					$.each(column, function(o) {
-						if (!column[o].hide || column[o].hide == undefined) {
 							var td_o = tr.insertCell(-1);
 							td_o.className=column[o].tbodyClass;
-							td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;word-break: keep-all;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;");
+						     var at="text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;word-break: keep-all;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;";
 
 							var clm = column[o].colkey;
 							var data = CommnUtil.notEmpty(_getValueByName(rowdata, clm));
@@ -377,7 +383,9 @@
 								}
 							}
 							;
-						}
+							if (column[o].hide==true)
+								at+="display:"+(column[o].hide ? 'none':'block');
+							td_o.setAttribute("style", at);
 					});
 					if (l_tree.tree){
 						if(l_tree.type==1){
@@ -1109,10 +1117,47 @@
 				form.append(input1);
 			}
 			form.submit();//表单提交 
-		}
+		};
 		var getCurrentData = function(){
 			return currentData;
-		}
+		};
+		var dmycolcheck = function(e){
+			var u = $(e.target).attr("span_value");
+			if($(e.target).attr("class").indexOf("checked")==-1){
+				$(e.target).addClass("checked");
+				$(divid).find('table:eq(0) tr th:nth-child('+(parseInt(u,10)+3)+')').hide();
+				$(divid).find('table:eq(0) tr td:nth-child('+(parseInt(u,10)+3)+')').hide();
+			}
+			else{
+				$(e.target).removeClass("checked");
+				$(divid).find('table:eq(0) tr th:nth-child('+(parseInt(u,10)+3)+')').show();
+				$(divid).find('table:eq(0) tr td:nth-child('+(parseInt(u,10)+3)+')').show();
+			}
+		};
+		var dmycol = function(e){
+			if($('#ul_dmycol').length > 0){
+				$('#ul_dmycol').toggle();
+			}else{
+				var ul = document.createElement("ul");
+				ul.className = "dmycol-menu";
+				ul.id="ul_dmycol";
+				$.each(column, function(i,o) {
+					var li = document.createElement("li");//
+					var spanbox = document.createElement("span");
+					spanbox.className = "span_checkbox";
+					spanbox.setAttribute("span_value", i);
+					spanbox.name=o.colkey;
+					spanbox.onclick=dmycolcheck.bind();
+					li.appendChild(spanbox);
+					var sp = document.createElement("span");//
+					sp.innerHTML=" "+o.name;
+					li.appendChild(sp);
+					ul.appendChild(li);
+				});
+				e.target.parentNode.insertBefore(ul,null);
+			}
+			
+		};
 		init();
 
 		return {
