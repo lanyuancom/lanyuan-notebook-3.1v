@@ -40,6 +40,7 @@ $(function() {
 			}
 		} ],
 		jsonUrl : rootPath + '/user/findByPage.shtml',
+		dymCol:true,
 		checkbox : true,
 		serNumber : true
 	});

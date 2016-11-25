@@ -11,6 +11,7 @@
 	lyGrid = (function(params,callback) {
 		var confs = {
 			l_column : [],
+			dymCol : false,
 			pagId : 'paging', // 加载表格存放位置的ID
 			width : '100%', // 表格高度
 			height : '100%', // 表格宽度
@@ -275,11 +276,13 @@
 						
 						tr.appendChild(th);
 				});
-				var ico = document.createElement("i");// 1.创建一个i表
-				ico.className = "fa fa-thumb-tack";
-				ico.setAttribute("style", "float: right;margin-top: 3px;");
-				ico.onclick = dmycol.bind();
-				tr.lastChild.appendChild(ico);
+				if(conf.dymCol){
+					var ico = document.createElement("i");// 1.创建一个i表
+					ico.className = "fa fa-thumb-tack";
+					ico.setAttribute("style", "float: right;margin-top: 3px;");
+					ico.onclick = dmycol.bind();
+					tr.lastChild.appendChild(ico);
+				}
 			}
 
 		};
@@ -1144,7 +1147,10 @@
 				$.each(column, function(i,o) {
 					var li = document.createElement("li");//
 					var spanbox = document.createElement("span");
-					spanbox.className = "span_checkbox";
+					if (o.hide==true)
+						spanbox.className = "span_checkbox checked";
+					else
+						spanbox.className = "span_checkbox";
 					spanbox.setAttribute("span_value", i);
 					spanbox.name=o.colkey;
 					spanbox.onclick=dmycolcheck.bind();

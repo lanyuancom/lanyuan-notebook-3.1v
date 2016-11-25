@@ -23,6 +23,7 @@ $(function() {
 			name : "描述"
 		} ],
 		jsonUrl : rootPath + '/role/findByPage.shtml',
+		dymCol:true,
 		checkbox : true
 	});
 	$("#search").click("click", function() {// 绑定查询按扭
