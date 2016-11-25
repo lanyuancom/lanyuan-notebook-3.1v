@@ -11,7 +11,7 @@
 	lyGrid = (function(params,callback) {
 		var confs = {
 			l_column : [],
-			dymCol : false,
+			dymCol : false,//是否显示动态列
 			pagId : 'paging', // 加载表格存放位置的ID
 			width : '100%', // 表格高度
 			height : '100%', // 表格宽度
