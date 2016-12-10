@@ -74,7 +74,7 @@
 			createHtml();
 			//fixhead();
 			if(callback)
-				callback(column,currentData);//回调函数 column 字段名,当前界面的数据 currentData
+				callback(this);//回调函数 column 字段名,当前界面的数据 currentData
 		};
 		var extend = function(o, n, override) {
 			for ( var p in n)
