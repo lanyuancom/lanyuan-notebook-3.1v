@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -713,4 +714,23 @@ public class Common {
 			}
 		}
 	}
+
+	/**
+	 * 正则表达式替换空格和换行符 为一个空格
+	 * @param str
+	 * @return
+	 */
+	public static String getStringNoBlank(String str) {      
+        if(str!=null && !"".equals(str)) {      
+            Pattern p = Pattern.compile("\t|\r|\n");      
+            Matcher m = p.matcher(str);      
+            String strNoBlank = m.replaceAll(" ");
+            p = Pattern.compile("\\s+");      
+            m = p.matcher(str);      
+            strNoBlank = m.replaceAll(" ");
+            return strNoBlank;      
+        }else {      
+            return str;      
+        }           
+    }
 }

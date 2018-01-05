@@ -147,7 +147,8 @@ public class PagePlugin implements Interceptor {
 		try {
 			String countSql = "";
 			try {
-				 countSql = "select count(1) " +removeOrderBys(suffixStr(sql));
+				// countSql = "select count(1) " +suffixStr(sql);
+				countSql = "select count(1) from (" + sql+ ") tmp_count"; 
 				 countStmt = connection.prepareStatement(countSql);
 		            BoundSql countBS = new BoundSql(mappedStatement.getConfiguration(),countSql.toString(),boundSql.getParameterMappings(),boundSql.getParameterObject());    
 		            Plugin.setParameters(countStmt,mappedStatement,countBS,boundSql.getParameterObject());    
@@ -177,77 +178,62 @@ public class PagePlugin implements Interceptor {
 
     }
     /**
-	 * select id, articleNofrom, sum(ddd) ss, articleName, ( SELECT loginName,sum(ddd) from
-	 * oss_userinfo u where u.id=userId order by id) loginName, (SELECT userName from
-	 * oss_userinfo u where u.id=userId and fromaa =  (SELECT userName from
-	 * oss_userinfo u where u.id=userId) fromuserName, sum(ddd) ss from article,(select xxx)  where = (SELECT userName from
-	 * oss_userinfo u where u.id=userId order by id desc) order by id desc 
-	 * 兼容以上子查询 //去除sql ..from 前面的字符。考虑 aafrom fromdd 等等情况
+	 * select id, articleNofrom, sum(ddd) ss, articleName, ( SELECT
+	 * loginName,sum(ddd) from oss_userinfo u where u.id=userId order by id)
+	 * loginName, (SELECT userName from oss_userinfo u where u.id=userId and
+	 * fromaa = (SELECT userName from oss_userinfo u where u.id=userId)
+	 * fromuserName, sum(ddd) ss from article,(select xxx) where = (SELECT
+	 * userName from oss_userinfo u where u.id=userId order by id desc) order by
+	 * id desc 兼容以上子查询 //去除sql ..from 前面的字符。考虑 aafrom fromdd 等等情况
 	 */
+	static String source_sql = "";
+
 	public static String suffixStr(String toSql) {
-		toSql =getStringNoBlank(toSql);
-		if(StringUtils.isBlank(source_sql))
-		source_sql = toSql;
-		toSql=toSql.toLowerCase();
+		toSql = Common.getStringNoBlank(toSql);
+		if (StringUtils.isBlank(source_sql))
+			source_sql = toSql;
+		toSql = toSql.toLowerCase();
 		int sun = toSql.indexOf(" from ");
 		String s1 = toSql.substring(0, sun);
-		if (s1.indexOf("( select ") > -1|| s1.indexOf("(select ") > -1) {
-			return suffixStr(toSql.substring(sun+5));
-		}else{
+		if (s1.indexOf("( select ") > -1 || s1.indexOf("(select ") > -1) {
+			return suffixStr(toSql.substring(sun + 5));
+		} else {
 			toSql = toSql.substring(sun);
-			source_sql=source_sql.substring(source_sql.length()-toSql.length());
-		}
-		return source_sql;
-	}
-	public static void main(String[] args) {
-		String sql="  select "+
-		 "	articleNo "+
-		 " from article left jion aefv where 1=(SELECT userName from ly_userinfo u where u.id=userId) "
-		 + "and id = sdf   order by as asc";
-		sql=removeOrderBys(sql);
-		System.out.println(sql);
-		System.out.println(suffixStr(sql));
-	}
-	 /** 
-   * 去除Sql的orderBy。 
-   * @param toSql 
-   * @return String
-   *
-   */  
-	static String str_sql = "";
-	static String source_sql = "";
-	private static String removeOrderBys(String sql) {
-		sql =getStringNoBlank(sql);
-		int s = 0;
-		int e = 0;
-		source_sql = sql;
-		sql=sql.toLowerCase();
-		int sun = sql.lastIndexOf(" order ");
-		if (sun > -1) {
-			String f = sql.substring(sun);
-			if(f.lastIndexOf(")")==-1)
-			{
-				int a = sql.lastIndexOf(" asc");
-				if(a>-1){
-					String as = sql.substring(a,a+1);
-					if (as.trim().isEmpty()) 
-						s=sql.lastIndexOf(" order ");
-						e=a+4;
+			source_sql = source_sql.substring(source_sql.length()
+					- toSql.length());
+			int s = 0;
+			int e = 0;
+			String sql = source_sql.toLowerCase();
+			sun = sql.lastIndexOf(" order ");
+			if (sun > -1) {
+				String f = sql.substring(sun);
+				if (f.lastIndexOf(")") == -1) {
+					int a = sql.lastIndexOf(" asc");
+					if (a > -1) {
+						String as = sql.substring(a + 4, a + 5);
+						if (as.trim().isEmpty()) {
+							s = sql.lastIndexOf(" order ");
+							e = a + 5;
+						}
+					}
+					int d = sql.lastIndexOf(" desc");
+					if (d > -1) {
+						String ds = sql.substring(d + 5, d + 6);
+						if (ds.trim().isEmpty()) {
+							s = sql.lastIndexOf(" order ");
+							e = d + 6;
+						}
+					}
+					String ss = source_sql.substring(0, s + 1);
+					String ee = source_sql.substring(e);
+					source_sql = ss + ee;
 				}
-				int d = sql.lastIndexOf(" desc");
-				if(d>-1){
-					String ds = sql.substring(d,d+1);
-					if (ds.trim().isEmpty()) 
-						s=sql.lastIndexOf(" order ");
-						e=d+5;
-				}
-				String ss=source_sql.substring(0,s);
-				String ee=source_sql.substring(e);
-				source_sql = ss+ee;
+
 			}
-				
 		}
-		return source_sql;
+		toSql = source_sql;
+		source_sql = "";
+		return toSql;
 	}
 	
     /**

@@ -40,7 +40,7 @@ public class UploadUtil
 	 * @return
 	 * @throws IOException
 	 */
-	public void uploadImage1(HttpServletRequest request,MultipartFile file, String getUploadContentType, String getUploadFileName) throws IOException
+	public void uploadImage(HttpServletRequest request,MultipartFile file, String getUploadContentType, String getUploadFileName) throws IOException
 	{
 
 		String getImagePath = request.getSession().getServletContext().getRealPath(imagePath);
