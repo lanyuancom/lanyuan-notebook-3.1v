@@ -44,6 +44,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.scripting.xmltags.ForEachSqlNode;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
@@ -526,6 +527,9 @@ public class Plugin implements InvocationHandler {
                     if (typeHandler == null) {    
                         throw new ExecutorException("There was no TypeHandler found for parameter "+ propertyName + " of statement "+ mappedStatement.getId());    
                     }    
+                    JdbcType jdbcType = parameterMapping.getJdbcType();  
+                    if (jdbcType == null) jdbcType = JdbcType.VARCHAR;  
+                    if (value == null && jdbcType == null) jdbcType = configuration.getJdbcTypeForNull();
                     typeHandler.setParameter(ps, i + 1, value, parameterMapping.getJdbcType());    
                 }    
             }    
