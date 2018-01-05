@@ -530,7 +530,7 @@ public class Plugin implements InvocationHandler {
                     JdbcType jdbcType = parameterMapping.getJdbcType();  
                     if (jdbcType == null) jdbcType = JdbcType.VARCHAR;  
                     if (value == null && jdbcType == null) jdbcType = configuration.getJdbcTypeForNull();
-                    typeHandler.setParameter(ps, i + 1, value, parameterMapping.getJdbcType());    
+                    typeHandler.setParameter(ps, i + 1, value, jdbcType);    
                 }    
             }    
         }    
